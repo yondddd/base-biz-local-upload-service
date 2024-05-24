@@ -35,14 +35,6 @@ public class S3Controller {
     @Autowired
     private S3Service s3Service;
 
-    // Bucket相关接口
-    @PutMapping("/{bucketName}")
-    public ResponseEntity<String> createBucket(@PathVariable String bucketName) throws Exception {
-        bucketName = URLDecoder.decode(bucketName, "utf-8");
-        s3Service.createBucket(bucketName);
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("/")
     public ResponseEntity<String> listBuckets() throws Exception {
         String xml = "";
@@ -74,20 +66,29 @@ public class S3Controller {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(xml);
     }
 
-    @RequestMapping(value = "/{bucketName}", method = RequestMethod.HEAD)
-    public ResponseEntity<Object> headBucket(@PathVariable(value = "bucketName") String bucketName) throws Exception {
-        bucketName = URLDecoder.decode(bucketName, "utf-8");
-        if (s3Service.headBucket(bucketName)) {
+    // Bucket相关接口
+    @PutMapping("/{createBucket}")
+    public ResponseEntity<String> createBucket(@PathVariable String createBucket) throws Exception {
+        createBucket = URLDecoder.decode(createBucket, "utf-8");
+        s3Service.createBucket(createBucket);
+        return ResponseEntity.ok().build();
+    }
+    
+    
+    @RequestMapping(value = "/{headBucket}", method = RequestMethod.HEAD)
+    public ResponseEntity<Object> headBucket(@PathVariable(value = "headBucket") String headBucket) throws Exception {
+        headBucket = URLDecoder.decode(headBucket, "utf-8");
+        if (s3Service.headBucket(headBucket)) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @DeleteMapping("/{bucketName}")
-    public ResponseEntity<String> deleteBucket(@PathVariable String bucketName) throws Exception {
-        bucketName = URLDecoder.decode(bucketName, "utf-8");
-        s3Service.deleteBucket(bucketName);
+    @DeleteMapping("/{deleteBucket}")
+    public ResponseEntity<String> deleteBucket(@PathVariable String deleteBucket) throws Exception {
+        deleteBucket = URLDecoder.decode(deleteBucket, "utf-8");
+        s3Service.deleteBucket(deleteBucket);
         return ResponseEntity.noContent().build();
     }
 
@@ -132,15 +133,15 @@ public class S3Controller {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(xml);
     }
 
-    @RequestMapping(value = "/{bucketName}/**", method = RequestMethod.HEAD)
-    public ResponseEntity<Object> headObject(@PathVariable String bucketName, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        bucketName = URLDecoder.decode(bucketName, "utf-8");
+    @RequestMapping(value = "/{headObjectBucketName}/**", method = RequestMethod.HEAD)
+    public ResponseEntity<Object> headObject(@PathVariable String headObjectBucketName, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        headObjectBucketName = URLDecoder.decode(headObjectBucketName, "utf-8");
         String pageUrl = URLDecoder.decode(request.getRequestURI(), "utf-8");
         if (pageUrl.indexOf("\\?") >= 0) {
             pageUrl = pageUrl.split("\\?")[0];
         }
-        String objectKey = pageUrl.replace(request.getContextPath() + "/s3/" + bucketName + "/", "").replace("/metadata", "");
-        HashMap<String, String> headInfo = s3Service.headObject(bucketName, objectKey);
+        String objectKey = pageUrl.replace(request.getContextPath() + "/s3/" + headObjectBucketName + "/", "").replace("/metadata", "");
+        HashMap<String, String> headInfo = s3Service.headObject(headObjectBucketName, objectKey);
         if (headInfo.containsKey("NoExist")) {
             return ResponseEntity.notFound().build();
         } else {
@@ -151,17 +152,17 @@ public class S3Controller {
         }
     }
 
-    @PutMapping("/{bucketName}/**")
-    public ResponseEntity<String> putObject(@PathVariable String bucketName, HttpServletRequest request) throws Exception {
-        bucketName = URLDecoder.decode(bucketName, "utf-8");
+    @PutMapping("/{putObjectBucketName}/**")
+    public ResponseEntity<String> putObject(@PathVariable String putObjectBucketName, HttpServletRequest request) throws Exception {
+        putObjectBucketName = URLDecoder.decode(putObjectBucketName, "utf-8");
         String pageUrl = URLDecoder.decode(request.getRequestURI(), "utf-8");
         if (pageUrl.indexOf("\\?") >= 0) {
             pageUrl = pageUrl.split("\\?")[0];
         }
-        String objectKey = pageUrl.replace(request.getContextPath() + "/s3/" + bucketName + "/", "");
+        String objectKey = pageUrl.replace(request.getContextPath() + "/s3/" + putObjectBucketName + "/", "");
         String copySource = URLDecoder.decode(request.getHeader("x-amz-copy-source"), "utf-8");
         if (StringUtil.isEmpty(copySource)) {
-            s3Service.putObject(bucketName, objectKey, request.getInputStream());
+            s3Service.putObject(putObjectBucketName, objectKey, request.getInputStream());
             return ResponseEntity.ok().build();
         } else {
             if (copySource.indexOf("\\?") >= 0) {
@@ -181,7 +182,7 @@ public class S3Controller {
                 result.append(copyList[i]).append("/");
             }
             String sourceObjectKey = result.toString();
-            s3Service.copyObject(sourceBucketName, sourceObjectKey, bucketName, objectKey);
+            s3Service.copyObject(sourceBucketName, sourceObjectKey, putObjectBucketName, objectKey);
 
             String xml = "";
             Document doc = DocumentHelper.createDocument();
@@ -203,15 +204,15 @@ public class S3Controller {
         }
     }
 
-    @GetMapping("/{bucketName}/**")
-    public void getObject(@PathVariable String bucketName, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        bucketName = URLDecoder.decode(bucketName, "utf-8");
+    @GetMapping("/{getObjectBucketName}/**")
+    public void getObject(@PathVariable String getObjectBucketName, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        getObjectBucketName = URLDecoder.decode(getObjectBucketName, "utf-8");
         String pageUrl = URLDecoder.decode(request.getRequestURI(), "utf-8");
         if (pageUrl.indexOf("\\?") >= 0) {
             pageUrl = pageUrl.split("\\?")[0];
         }
-        String objectKey = pageUrl.replace(request.getContextPath() + "/s3/" + bucketName + "/", "");
-        S3ObjectInputStream objectStream = s3Service.getObject(bucketName, objectKey);
+        String objectKey = pageUrl.replace(request.getContextPath() + "/s3/" + getObjectBucketName + "/", "");
+        S3ObjectInputStream objectStream = s3Service.getObject(getObjectBucketName, objectKey);
         response.setContentType(objectStream.getMetadata().getContentType());
         response.setHeader("Content-Disposition", "filename=" + URLEncoder.encode(objectStream.getMetadata().getFileName(), "utf-8"));
         response.setCharacterEncoding("utf-8");
@@ -239,35 +240,35 @@ public class S3Controller {
         }
     }
 
-    @DeleteMapping("/{bucketName}/**")
-    public ResponseEntity<String> deleteObject(@PathVariable String bucketName, HttpServletRequest request) throws Exception {
-        bucketName = URLDecoder.decode(bucketName, "utf-8");
+    @DeleteMapping("/{deleteObjectBucketName}/**")
+    public ResponseEntity<String> deleteObject(@PathVariable String deleteObjectBucketName, HttpServletRequest request) throws Exception {
+        deleteObjectBucketName = URLDecoder.decode(deleteObjectBucketName, "utf-8");
         String pageUrl = URLDecoder.decode(request.getRequestURI(), "utf-8");
         if (pageUrl.indexOf("\\?") >= 0) {
             pageUrl = pageUrl.split("\\?")[0];
         }
-        String objectKey = pageUrl.replace(request.getContextPath() + "/s3/" + bucketName + "/", "");
-        s3Service.deleteObject(bucketName, objectKey);
+        String objectKey = pageUrl.replace(request.getContextPath() + "/s3/" + deleteObjectBucketName + "/", "");
+        s3Service.deleteObject(deleteObjectBucketName, objectKey);
         return ResponseEntity.noContent().build();
     }
 
 
     // 分片上传
-    @RequestMapping(value = "/{bucketName}/**", method = RequestMethod.POST, params = "uploads")
-    public ResponseEntity<Object> createMultipartUpload(@PathVariable String bucketName, HttpServletRequest request) throws Exception {
-        bucketName = URLDecoder.decode(bucketName, "utf-8");
+    @RequestMapping(value = "/{createMultipartUploadBucketName}/**", method = RequestMethod.POST, params = "uploads")
+    public ResponseEntity<Object> createMultipartUpload(@PathVariable String createMultipartUploadBucketName, HttpServletRequest request) throws Exception {
+        createMultipartUploadBucketName = URLDecoder.decode(createMultipartUploadBucketName, "utf-8");
         String pageUrl = URLDecoder.decode(request.getRequestURI(), "utf-8");
         if (pageUrl.indexOf("\\?") >= 0) {
             pageUrl = pageUrl.split("\\?")[0];
         }
-        String objectKey = pageUrl.replace(request.getContextPath() + "/s3/" + bucketName + "/", "");
-        InitiateMultipartUploadResult result = s3Service.initiateMultipartUpload(bucketName, objectKey);
+        String objectKey = pageUrl.replace(request.getContextPath() + "/s3/" + createMultipartUploadBucketName + "/", "");
+        InitiateMultipartUploadResult result = s3Service.initiateMultipartUpload(createMultipartUploadBucketName, objectKey);
 
         String xml = "";
         Document doc = DocumentHelper.createDocument();
         Element root = doc.addElement("InitiateMultipartUploadResult");
         Element bucket = root.addElement("Bucket");
-        bucket.setText(bucketName);
+        bucket.setText(createMultipartUploadBucketName);
         Element key = root.addElement("Key");
         key.setText(objectKey);
         Element uploadId = root.addElement("UploadId");
@@ -284,29 +285,29 @@ public class S3Controller {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(xml);
     }
 
-    @RequestMapping(value = "/{bucketName}/**", method = RequestMethod.PUT, params = {"partNumber", "uploadId"})
-    public ResponseEntity<String> uploadPart(@PathVariable String bucketName, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        bucketName = URLDecoder.decode(bucketName, "utf-8");
+    @RequestMapping(value = "/{uploadPartBucketName}/**", method = RequestMethod.PUT, params = {"partNumber", "uploadId"})
+    public ResponseEntity<String> uploadPart(@PathVariable String uploadPartBucketName, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        uploadPartBucketName = URLDecoder.decode(uploadPartBucketName, "utf-8");
         String pageUrl = URLDecoder.decode(request.getRequestURI(), "utf-8");
         if (pageUrl.indexOf("\\?") >= 0) {
             pageUrl = pageUrl.split("\\?")[0];
         }
-        String objectKey = pageUrl.replace(request.getContextPath() + "/s3/" + bucketName + "/", "");
+        String objectKey = pageUrl.replace(request.getContextPath() + "/s3/" + uploadPartBucketName + "/", "");
         int partNumber = ConvertOp.convert2Int(request.getParameter("partNumber"));
         String uploadId = request.getParameter("uploadId");
-        PartETag eTag = s3Service.uploadPart(bucketName, objectKey, partNumber, uploadId, request.getInputStream());
+        PartETag eTag = s3Service.uploadPart(uploadPartBucketName, objectKey, partNumber, uploadId, request.getInputStream());
         response.addHeader("ETag", eTag.geteTag());
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = "/{bucketName}/**", method = RequestMethod.POST, params = "uploadId")
-    public ResponseEntity<String> completeMultipartUpload(@PathVariable String bucketName, HttpServletRequest request) throws Exception {
-        bucketName = URLDecoder.decode(bucketName, "utf-8");
+    @RequestMapping(value = "/{completeMultipartUploadBucketName}/**", method = RequestMethod.POST, params = "uploadId")
+    public ResponseEntity<String> completeMultipartUpload(@PathVariable String completeMultipartUploadBucketName, HttpServletRequest request) throws Exception {
+        completeMultipartUploadBucketName = URLDecoder.decode(completeMultipartUploadBucketName, "utf-8");
         String pageUrl = URLDecoder.decode(request.getRequestURI(), "utf-8");
         if (pageUrl.indexOf("\\?") >= 0) {
             pageUrl = pageUrl.split("\\?")[0];
         }
-        String objectKey = pageUrl.replace(request.getContextPath() + "/s3/" + bucketName + "/", "");
+        String objectKey = pageUrl.replace(request.getContextPath() + "/s3/" + completeMultipartUploadBucketName + "/", "");
         String uploadId = request.getParameter("uploadId");
         List<PartETag> partETags = new ArrayList<>();
 
@@ -320,14 +321,14 @@ public class S3Controller {
             PartETag partETag = new PartETag(partNumber, eTag);
             partETags.add(partETag);
         }
-        CompleteMultipartUploadResult result = s3Service.completeMultipartUpload(bucketName, objectKey, uploadId, new CompleteMultipartUpload(partETags));
+        CompleteMultipartUploadResult result = s3Service.completeMultipartUpload(completeMultipartUploadBucketName, objectKey, uploadId, new CompleteMultipartUpload(partETags));
         String xml = "";
         Document doc = DocumentHelper.createDocument();
         Element root = doc.addElement("CompleteMultipartUploadResult");
         Element location = root.addElement("Location");
-        location.setText(CommonUtil.getApiPath() + "s3/" + bucketName + "/" + objectKey);
+        location.setText(CommonUtil.getApiPath() + "s3/" + completeMultipartUploadBucketName + "/" + objectKey);
         Element bucket = root.addElement("Bucket");
-        bucket.setText(bucketName);
+        bucket.setText(completeMultipartUploadBucketName);
         Element key = root.addElement("Key");
         key.setText(objectKey);
         Element etag = root.addElement("ETag");

@@ -35,15 +35,22 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/s3 -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
-            <version>2.20.45</version>
+            <version>2.25.58</version>
         </dependency>
         <dependency>
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
             <version>1.6.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.5</version>
         </dependency>
     </dependencies>
 
@@ -62,76 +69,6 @@
                     <execution>
                         <goals>
                             <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!--api文档生成插件-->
-            <plugin>
-                <groupId>com.ruijing.plugin</groupId>
-                <artifactId>swagger-package-plugin</artifactId>
-                <version>1.0.8-SNAPSHOT</version>
-                <configuration>
-                    <!--项目名称，必填，需要唯一，未在数据库中的不允许使用-->
-                    <appkey>base-biz-local-upload-service</appkey>
-                    <!--项目版本号，不填默认"1.0.0"-->
-                    <version>1.0.0</version>
-                    <!--是否跳过swagger生成，不填默认false-->
-                    <skipSwaggerGeneration>true</skipSwaggerGeneration>
-                    <apiSources>
-                        <apiSource>
-                            <!--这个apiSource所属分组，不填默认"default"-->
-                            <group>RPC接口</group>
-                            <!--这里为false表示是rpc接口，true表示controller接口,不填默认true-->
-                            <springMvc>false</springMvc>
-                            <!--Controller或rpc接口所在的包或类，必填，可填多个-->
-                            <locations>
-                                <location>com.ruijing.api</location>
-                            </locations>
-                            <!--展示页面显示的头部信息-->
-                            <info>
-                                <!--主标题，必须-->
-                                <title>RPC接口文档</title>
-                                <!--api版本，页脚显示，不填默认v1-->
-                                <version>1.0.0</version>
-                                <!--描述信息，显示在主标题下面-->
-                                <description>RPC接口文档</description>
-                            </info>
-                        </apiSource>
-                        <!--网关配置，需要可自行开启-->
-                        <!--<apiSource>
-                            &lt;!&ndash;这个apiSource所属分组，不填默认"default"&ndash;&gt;
-                            <group>网关接口</group>
-                            &lt;!&ndash;是否是网关接口&ndash;&gt;
-                            <gateWay>true</gateWay>
-                            &lt;!&ndash;如果gateWay=true，将会忽略这个配置。false表示是rpc接口，true表示controller接口,不填默认true&ndash;&gt;
-                            <springMvc>false</springMvc>
-                            &lt;!&ndash;mvc接口或网关接口路径前缀&ndash;&gt;
-                            <basePath>https://gateway.test.rj-info.com/网关相对路径</basePath>
-                            &lt;!&ndash;Controller或rpc接口所在的包或类，必填，可填多个&ndash;&gt;
-                            <locations>
-                                <location>网关接口所在的包</location>
-                            </locations>
-                            <typesToSkip>
-                                <typeToSkip>com.ruijing.base.gateway.api.dto.RjSessionInfo</typeToSkip>
-                            </typesToSkip>
-                            &lt;!&ndash;展示页面显示的头部信息&ndash;&gt;
-                            <info>
-                                &lt;!&ndash;主标题，必须&ndash;&gt;
-                                <title>网关接口文档</title>
-                                &lt;!&ndash;api版本，页脚显示，不填默认v1&ndash;&gt;
-                                <version>1.0.0</version>
-                                &lt;!&ndash;描述信息，显示在主标题下面&ndash;&gt;
-                                <description>网关接口文档</description>
-                            </info>
-                        </apiSource>-->
-                    </apiSources>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>generate</goal>
                         </goals>
                     </execution>
                 </executions>
