@@ -1,4 +1,4 @@
-package com.ruijing.base.local.upload.controller;
+package com.ruijing.base.local.upload.s3.controller;
 
 
 import com.ruijing.base.local.upload.model.*;
@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,15 @@ public class S3Controller {
 
     @Autowired
     private S3Service s3Service;
+
+    // Bucket相关接口
+    @PutMapping("/{createBucket}")
+    public ResponseEntity<String> createBucket(@PathVariable String createBucket) throws Exception {
+        createBucket = URLDecoder.decode(createBucket, StandardCharsets.UTF_8.name());
+        s3Service.createBucket(createBucket);
+        return ResponseEntity.ok().build();
+    }
+
 
     @GetMapping("/")
     public ResponseEntity<String> listBuckets() throws Exception {
@@ -66,15 +76,7 @@ public class S3Controller {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(xml);
     }
 
-    // Bucket相关接口
-    @PutMapping("/{createBucket}")
-    public ResponseEntity<String> createBucket(@PathVariable String createBucket) throws Exception {
-        createBucket = URLDecoder.decode(createBucket, "utf-8");
-        s3Service.createBucket(createBucket);
-        return ResponseEntity.ok().build();
-    }
-    
-    
+
     @RequestMapping(value = "/{headBucket}", method = RequestMethod.HEAD)
     public ResponseEntity<Object> headBucket(@PathVariable(value = "headBucket") String headBucket) throws Exception {
         headBucket = URLDecoder.decode(headBucket, "utf-8");

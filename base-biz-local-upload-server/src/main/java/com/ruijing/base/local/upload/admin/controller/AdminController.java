@@ -1,4 +1,4 @@
-package com.ruijing.base.local.upload.controller;
+package com.ruijing.base.local.upload.admin.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -22,7 +22,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/console")
 @ConditionalOnProperty(name = "system.console", havingValue = "true", matchIfMissing = false)
-public class ConsoleController {
+public class AdminController {
     @Autowired
     private S3Util s3Util;
 
