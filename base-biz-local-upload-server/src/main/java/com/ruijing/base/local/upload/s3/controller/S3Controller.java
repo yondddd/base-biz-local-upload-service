@@ -36,15 +36,7 @@ public class S3Controller {
     @Autowired
     private S3Service s3Service;
 
-    // Bucket相关接口
-    @PutMapping("/{createBucket}")
-    public ResponseEntity<String> createBucket(@PathVariable String createBucket) throws Exception {
-        createBucket = URLDecoder.decode(createBucket, StandardCharsets.UTF_8.name());
-        s3Service.createBucket(createBucket);
-        return ResponseEntity.ok().build();
-    }
-
-
+    
     @GetMapping("/")
     public ResponseEntity<String> listBuckets() throws Exception {
         String xml = "";

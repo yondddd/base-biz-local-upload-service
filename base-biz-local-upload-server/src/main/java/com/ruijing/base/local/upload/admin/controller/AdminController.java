@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ruijing.base.local.upload.model.Bucket;
 import com.ruijing.base.local.upload.model.Result;
 import com.ruijing.base.local.upload.util.ConvertOp;
-import com.ruijing.base.local.upload.util.S3Util;
+import com.ruijing.base.local.upload.util.S3ClientUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.*;
@@ -24,20 +24,20 @@ import java.util.Map;
 @ConditionalOnProperty(name = "system.console", havingValue = "true", matchIfMissing = false)
 public class AdminController {
     @Autowired
-    private S3Util s3Util;
+    private S3ClientUtil s3ClientUtil;
 
     @PostMapping("/createBucket")
     @ResponseBody
     public Result createBucket(@RequestBody Map<String, Object> params) {
         String bucketName = ConvertOp.convert2String(params.get("bucketName"));
-        s3Util.createBucket(bucketName);
+        s3ClientUtil.createBucket(bucketName);
         return Result.okResult();
     }
 
     @PostMapping("/listBucket")
     @ResponseBody
     public Result listBucket() {
-        List<software.amazon.awssdk.services.s3.model.Bucket> bucketList = s3Util.getBucketList();
+        List<software.amazon.awssdk.services.s3.model.Bucket> bucketList = s3ClientUtil.getBucketList();
         List<Bucket> bucketInfoList = new ArrayList<>();
         for (software.amazon.awssdk.services.s3.model.Bucket item : bucketList) {
             Bucket bucket = new Bucket();
@@ -52,7 +52,7 @@ public class AdminController {
     @ResponseBody
     public Result headBucket(@RequestBody Map<String, Object> params) {
         String bucketName = ConvertOp.convert2String(params.get("bucketName"));
-        boolean checkExist = s3Util.headBucket(bucketName);
+        boolean checkExist = s3ClientUtil.headBucket(bucketName);
         return Result.okResult().add("obj", checkExist);
     }
 
@@ -60,7 +60,7 @@ public class AdminController {
     @ResponseBody
     public Result deleteBucket(@RequestBody Map<String, Object> params) {
         String bucketName = ConvertOp.convert2String(params.get("bucketName"));
-        s3Util.deleteBucket(bucketName);
+        s3ClientUtil.deleteBucket(bucketName);
         return Result.okResult();
     }
 
@@ -70,7 +70,7 @@ public class AdminController {
         String bucketName = ConvertOp.convert2String(params.get("bucketName"));
         String prefix = ConvertOp.convert2String(params.get("prefix"));
         JSONArray objectInfoList = new JSONArray();
-        List<S3Object> s3ObjectList = s3Util.getObjectList(bucketName, prefix);
+        List<S3Object> s3ObjectList = s3ClientUtil.getObjectList(bucketName, prefix);
         for (S3Object s3Object : s3ObjectList) {
             JSONObject objectInfo = new JSONObject();
             objectInfo.put("key", s3Object.key());
@@ -88,7 +88,7 @@ public class AdminController {
     public Result headObject(@RequestBody Map<String, Object> params) {
         String bucketName = ConvertOp.convert2String(params.get("bucketName"));
         String key = ConvertOp.convert2String(params.get("key"));
-        HashMap headInfo = s3Util.headObject(bucketName, key);
+        HashMap headInfo = s3ClientUtil.headObject(bucketName, key);
         if (headInfo.containsKey("noExist")) {
             return Result.okResult().add("obj", false);
         } else {
@@ -101,7 +101,7 @@ public class AdminController {
     public Result upload(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws Exception {
         String bucketName = request.getParameter("bucketName");
         String key = request.getParameter("key");
-        s3Util.upload(bucketName, key, file.getInputStream());
+        s3ClientUtil.upload(bucketName, key, file.getInputStream());
         return Result.okResult();
     }
 
@@ -110,7 +110,7 @@ public class AdminController {
     public Result createMultipartUpload(@RequestBody Map<String, Object> params) throws Exception {
         String bucketName = ConvertOp.convert2String(params.get("bucketName"));
         String key = ConvertOp.convert2String(params.get("key"));
-        String uploadID = s3Util.createMultipartUpload(bucketName, key);
+        String uploadID = s3ClientUtil.createMultipartUpload(bucketName, key);
         return Result.okResult().add("obj", uploadID);
     }
 
@@ -121,7 +121,7 @@ public class AdminController {
         String key = request.getParameter("key");
         String uploadID = request.getParameter("uploadID");
         int partNumber = ConvertOp.convert2Int(request.getParameter("partNumber"));
-        String etag = s3Util.uploadPart(bucketName, key, uploadID, partNumber, file.getInputStream());
+        String etag = s3ClientUtil.uploadPart(bucketName, key, uploadID, partNumber, file.getInputStream());
         return Result.okResult().add("obj", etag);
     }
 
@@ -140,7 +140,7 @@ public class AdminController {
             CompletedPart completedPart = CompletedPart.builder().partNumber(partNumber).eTag(eTag).build();
             partList.add(completedPart);
         }
-        String fileEtag = s3Util.completeMultipartUpload(bucketName, key, uploadID, partList);
+        String fileEtag = s3ClientUtil.completeMultipartUpload(bucketName, key, uploadID, partList);
         return Result.okResult().add("obj", fileEtag);
     }
 
@@ -149,7 +149,7 @@ public class AdminController {
     public Result getFileBytes(@RequestBody Map<String, Object> params) throws Exception {
         String bucketName = ConvertOp.convert2String(params.get("bucketName"));
         String key = ConvertOp.convert2String(params.get("key"));
-        byte[] data = s3Util.getFileByte(bucketName, key);
+        byte[] data = s3ClientUtil.getFileByte(bucketName, key);
         return Result.okResult().add("obj", data);
     }
 
@@ -158,7 +158,7 @@ public class AdminController {
     public Result download(@RequestBody Map<String, Object> params) throws Exception {
         String bucketName = ConvertOp.convert2String(params.get("bucketName"));
         String key = ConvertOp.convert2String(params.get("key"));
-        String url = s3Util.getDownLoadUrl(bucketName, key);
+        String url = s3ClientUtil.getDownLoadUrl(bucketName, key);
         return Result.okResult().add("obj", url);
     }
 
@@ -167,7 +167,7 @@ public class AdminController {
     public Result delete(@RequestBody Map<String, Object> params) throws Exception {
         String bucketName = ConvertOp.convert2String(params.get("bucketName"));
         String key = ConvertOp.convert2String(params.get("key"));
-        s3Util.delete(bucketName, key);
+        s3ClientUtil.delete(bucketName, key);
         return Result.okResult();
     }
 
@@ -178,7 +178,7 @@ public class AdminController {
         String sourceKey = ConvertOp.convert2String(params.get("sourceKey"));
         String targetBucketName = ConvertOp.convert2String(params.get("targetBucketName"));
         String targetKey = ConvertOp.convert2String(params.get("targetKey"));
-        s3Util.copyObject(sourceBucketName, sourceKey, targetBucketName, targetKey);
+        s3ClientUtil.copyObject(sourceBucketName, sourceKey, targetBucketName, targetKey);
         return Result.okResult();
     }
 

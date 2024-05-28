@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Component
-public class S3Util {
+public class S3ClientUtil {
     @Autowired
     private SystemConfig systemConfig;
 
