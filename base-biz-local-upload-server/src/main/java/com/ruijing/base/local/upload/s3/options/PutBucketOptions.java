@@ -1,7 +1,7 @@
 package com.ruijing.base.local.upload.s3.options;
 
-import cn.hutool.http.server.HttpServerRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 
 public class PutBucketOptions {
@@ -52,7 +52,8 @@ public class PutBucketOptions {
         this.noLock = noLock;
     }
     
-    public static PutBucketOptions extractOptions(HttpServerRequest httpServerRequest) {
-    
+    public static PutBucketOptions extractOptions(HttpServletRequest httpServerRequest) {
+        httpServerRequest.getHeader()
     }
+
 }

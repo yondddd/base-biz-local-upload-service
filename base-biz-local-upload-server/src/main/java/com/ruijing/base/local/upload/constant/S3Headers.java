@@ -9,9 +9,14 @@ import com.ruijing.base.biz.api.server.api.rpc.annotation.RpcModel;
  */
 @RpcModel("s3 headers")
 public class S3Headers {
-    
+
     // Object lock enabled
     public static final String AmzObjectLockEnabled = "x-amz-bucket-object-lock-enabled";
-    
-    
+
+    // Response request id.
+    public static final String AmzRequestID = "x-amz-request-id";
+
+    public static final String AmzRequestHostID = "x-amz-id-2";
+
+
 }

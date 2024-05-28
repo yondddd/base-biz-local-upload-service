@@ -1,6 +1,5 @@
 package com.ruijing.base.local.upload.s3.controller;
 
-import cn.hutool.http.server.HttpServerRequest;
 import com.ruijing.base.local.upload.s3.options.PutBucketOptions;
 import com.ruijing.base.local.upload.s3.service.BucketService;
 import com.ruijing.base.local.upload.util.s3.S3Util;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @Description: bucket controller
@@ -20,20 +20,19 @@ import javax.annotation.Resource;
  */
 @RestController
 public class BucketController {
-    
+
     @Resource
     private BucketService bucketService;
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(BucketController.class);
-    
+
     // 每天都看一看
-    
+
     @PutMapping("/s3/{putBucket}/")
-    public ResponseEntity<String> putBucket(@PathVariable String putBucket, HttpServerRequest httpServerRequest) throws Exception {
-        putBucket = S3Util.urlDecode(putBucket);
-        bucketService.putBucket(putBucket, PutBucketOptions.extractOptions(httpServerRequest));
+    public ResponseEntity<String> putBucket(@PathVariable String putBucket, HttpServletRequest httpServerRequest) throws Exception {
+        bucketService.putBucket(S3Util.urlDecode(putBucket), PutBucketOptions.extractOptions(httpServerRequest));
         return ResponseEntity.ok().build();
     }
-    
-    
+
+
 }

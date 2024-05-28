@@ -23,6 +23,7 @@ import java.util.*;
 
 @Component
 public class S3Interceptor implements HandlerInterceptor {
+
     @Autowired
     private SystemConfig systemConfig;
 

@@ -1,7 +1,6 @@
 package com.ruijing.base.local.upload.enums;
 
 import com.ruijing.fundamental.api.annotation.Model;
-import software.amazon.awssdk.http.HttpStatusCode;
 
 /**
  * @Description: api error
@@ -11,18 +10,34 @@ import software.amazon.awssdk.http.HttpStatusCode;
 @Model("api error")
 public enum ApiErrorEnum {
 
-    NO(null,);
+    ErrNoSuchKey(64, "NoSuchKey", "The specified key does not exist.", "0026-00000001");
 
-    private int id;
-    private String code;
-    private String description;
-    private HttpStatusCode httpStatusCode;
-    
-     ApiErrorEnum(int id,String code,String description,HttpStatusCode httpStatusCode){
+    private final int id;
+    private final String code;
+    private final String description;
+    private final String ec;
+
+    ApiErrorEnum(int id, String code, String description, String ec) {
         this.id = id;
         this.code = code;
         this.description = description;
-        this.httpStatusCode = httpStatusCode;
+        this.ec = ec;
     }
-    
+
+    public int getId() {
+        return id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getEc() {
+        return ec;
+    }
+
 }
