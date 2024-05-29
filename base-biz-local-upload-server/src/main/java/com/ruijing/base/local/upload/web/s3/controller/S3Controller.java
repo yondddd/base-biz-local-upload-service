@@ -1,4 +1,4 @@
-package com.ruijing.base.local.upload.s3.controller;
+package com.ruijing.base.local.upload.web.s3.controller;
 
 
 import com.ruijing.base.local.upload.model.*;
@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

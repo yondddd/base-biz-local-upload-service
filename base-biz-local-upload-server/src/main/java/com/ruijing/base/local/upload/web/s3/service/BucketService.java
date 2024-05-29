@@ -1,6 +1,6 @@
-package com.ruijing.base.local.upload.s3.service;
+package com.ruijing.base.local.upload.web.s3.service;
 
-import com.ruijing.base.local.upload.s3.options.PutBucketOptions;
+import com.ruijing.base.local.upload.web.s3.options.PutBucketOptions;
 
 /**
  * @Description: bucket interface

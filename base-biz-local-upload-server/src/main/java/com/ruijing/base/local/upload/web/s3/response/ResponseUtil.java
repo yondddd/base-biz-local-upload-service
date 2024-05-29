@@ -1,4 +1,4 @@
-package com.ruijing.base.local.upload.s3.response;
+package com.ruijing.base.local.upload.web.s3.response;
 
 import com.ruijing.base.local.upload.constant.S3Headers;
 import com.ruijing.base.local.upload.enums.ApiErrorEnum;
@@ -49,4 +49,5 @@ public class ResponseUtil {
 
     }
 
+    // write http
 }

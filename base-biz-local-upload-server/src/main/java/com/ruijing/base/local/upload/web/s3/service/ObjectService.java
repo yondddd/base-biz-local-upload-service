@@ -1,4 +1,4 @@
-package com.ruijing.base.local.upload.s3.service;
+package com.ruijing.base.local.upload.web.s3.service;
 
 /**
  * @author yond

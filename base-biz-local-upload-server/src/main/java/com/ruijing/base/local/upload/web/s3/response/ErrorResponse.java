@@ -1,4 +1,4 @@
-package com.ruijing.base.local.upload.s3.response;
+package com.ruijing.base.local.upload.web.s3.response;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

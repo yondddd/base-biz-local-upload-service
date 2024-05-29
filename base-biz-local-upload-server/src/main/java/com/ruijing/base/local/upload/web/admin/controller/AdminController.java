@@ -1,4 +1,4 @@
-package com.ruijing.base.local.upload.admin.controller;
+package com.ruijing.base.local.upload.web.admin.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;

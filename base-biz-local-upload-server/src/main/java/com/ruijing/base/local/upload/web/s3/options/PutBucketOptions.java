@@ -1,4 +1,4 @@
-package com.ruijing.base.local.upload.s3.options;
+package com.ruijing.base.local.upload.web.s3.options;
 
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,7 +53,7 @@ public class PutBucketOptions {
     }
     
     public static PutBucketOptions extractOptions(HttpServletRequest httpServerRequest) {
-        httpServerRequest.getHeader()
+        return null;
     }
 
 }

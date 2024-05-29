@@ -1,4 +1,4 @@
-package com.ruijing.base.local.upload.s3.handle;
+package com.ruijing.base.local.upload.web.s3.handle;
 
 /**
  * @author yond
