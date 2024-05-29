@@ -9,11 +9,10 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class BucketHandle {
-    
-    
-    
-    public static void putBucketHandler(){
-    
+
+
+    public static void putBucketHandler() {
+
     }
-    
+
 }

@@ -19,13 +19,13 @@ import java.util.Map;
  * @Date: 2024-05-29
  */
 @Model("s3 context")
-@Order(1)
+@Order(20)
 @Component
 public class S3ContextFilter implements LocalFilter {
-    
+
     @Override
     public void doFilter(HttpServletRequest servletRequest, HttpServletResponse servletResponse, LocalFilterChain filterChain) throws IOException, ServletException {
-        
+
         // 如果是s3开头才加？
         S3Context s3Context = S3Context.getS3Context();
         if (s3Context != null) {
@@ -33,12 +33,15 @@ public class S3ContextFilter implements LocalFilter {
         }
         String requestId = servletRequest.getHeader(S3Headers.AmzRequestID);
         Object pathVariables = servletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-        if (pathVariables instanceof Map){
+        if (pathVariables instanceof Map) {
+            for (Map.Entry<String, ?> entry : ((Map<String, ?>) pathVariables).entrySet()) {
+
+            }
 //            String chatbotId = (String)pathVariables.get("classId");
         }
-        
-        
+
+
         filterChain.doFilter(servletRequest, servletResponse);
     }
-    
+
 }

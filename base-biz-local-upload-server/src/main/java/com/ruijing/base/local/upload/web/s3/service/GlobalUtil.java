@@ -11,17 +11,17 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Model("Global Util")
 public class GlobalUtil {
-    
+
     private static final AtomicReference<String> globalDeploymentID = new AtomicReference<>("initialValue");
-    
+
     public static void main(String[] args) {
         // Retrieve the current value of the atomic reference
         String deploymentID = globalDeploymentID.get();
-        
+
         // Example: printing the deployment ID
         System.out.println("Deployment ID: " + deploymentID);
         String s = globalDeploymentID.get();
         System.out.println("Deployment ID: " + s);
     }
-    
+
 }

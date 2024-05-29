@@ -5,13 +5,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 
 public class PutBucketOptions {
-    
+
     private boolean lockEnabled;
     private boolean versioningEnabled;
     private boolean forceCreate;
     private LocalDateTime createdAt;
     private boolean noLock;
-    
+
     public boolean isLockEnabled() {
         return lockEnabled;
     }
@@ -51,7 +51,7 @@ public class PutBucketOptions {
     public void setNoLock(boolean noLock) {
         this.noLock = noLock;
     }
-    
+
     public static PutBucketOptions extractOptions(HttpServletRequest httpServerRequest) {
         return null;
     }

@@ -3,18 +3,15 @@ package com.ruijing.base.local.upload.filter;
 import com.ruijing.base.local.upload.config.SystemConfig;
 import com.ruijing.base.local.upload.util.ConvertOp;
 import com.ruijing.base.local.upload.util.StringUtil;
-import com.ruijing.base.local.upload.web.s3.response.ResponseUtil;
 import com.ruijing.fundamental.api.annotation.Model;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -29,16 +26,16 @@ import java.util.*;
  * @Author: WangJieLong
  * @Date: 2024-05-29
  */
-@Model("s3 auth")
+@Order(10)
 @Component
-public class S3AuthFilter implements LocalFilter{
-    
+public class S3AuthFilter implements LocalFilter {
+
     private final SystemConfig systemConfig;
-    
+
     public S3AuthFilter(SystemConfig systemConfig) {
         this.systemConfig = systemConfig;
     }
-    
+
     @Override
     public void doFilter(HttpServletRequest servletRequest, HttpServletResponse servletResponse, LocalFilterChain filterChain) throws Exception {
         // 只对s3路径开头生效
@@ -58,7 +55,7 @@ public class S3AuthFilter implements LocalFilter{
         }
         filterChain.doFilter(servletRequest, servletResponse);
     }
-    
+
     public boolean validAuthorizationHead(HttpServletRequest request, String accessKeyId, String secretAccessKey) throws Exception {
         String authorization = request.getHeader("Authorization");
         String requestDate = request.getHeader("x-amz-date");
@@ -68,7 +65,7 @@ public class S3AuthFilter implements LocalFilter{
         String queryString = ConvertOp.convert2String(request.getQueryString());
         //示例
         //AWS4-HMAC-SHA256 Credential=admin/20230530/us-east-1/s3/aws4_request, SignedHeaders=amz-sdk-invocation-id;amz-sdk-request;host;x-amz-content-sha256;x-amz-date, Signature=6f50628a101b46264c7783937be0366762683e0d319830b1844643e40b3b0ed
-        
+
         ///region authorization拆分
         String[] parts = authorization.trim().split("\\,");
         //第一部分-凭证范围
@@ -88,7 +85,7 @@ public class S3AuthFilter implements LocalFilter{
         //第三部分-生成的签名
         String signature = parts[2].split("\\=")[1];
         ///endregion
-        
+
         ///region 待签名字符串
         String stringToSign = "";
         //签名由4部分组成
@@ -120,7 +117,7 @@ public class S3AuthFilter implements LocalFilter{
                 queryStringBuilder.append(key).append("=").append(queryStringMap.get(key)).append("&");
             }
             queryStringBuilder.deleteCharAt(queryStringBuilder.lastIndexOf("&"));
-            
+
             hashedCanonicalRequest += queryStringBuilder + "\n";
         } else {
             hashedCanonicalRequest += queryString + "\n";
@@ -136,7 +133,7 @@ public class S3AuthFilter implements LocalFilter{
         hashedCanonicalRequest += contentHash;
         stringToSign += doHex(hashedCanonicalRequest);
         ///endregion
-        
+
         ///region 重新生成签名
         //计算签名的key
         byte[] kSecret = ("AWS4" + secretAccessKey).getBytes(StandardCharsets.UTF_8);
@@ -149,10 +146,10 @@ public class S3AuthFilter implements LocalFilter{
         //对签名编码处理
         String strHexSignature = doBytesToHex(authSignature);
         ///endregion
-        
+
         return signature.equals(strHexSignature);
     }
-    
+
     public boolean validAuthorizationUrl(HttpServletRequest request, String accessKeyId, String secretAccessKey) throws Exception {
         String requestDate = request.getParameter("X-Amz-Date");
         String contentHash = "UNSIGNED-PAYLOAD";
@@ -161,7 +158,7 @@ public class S3AuthFilter implements LocalFilter{
         String queryString = ConvertOp.convert2String(request.getQueryString());
         //示例
         //"http://localhost:8001/s3/kkk/%E6%B1%9F%E5%AE%81%E8%B4%A2%E6%94%BF%E5%B1%80%E9%A1%B9%E7%9B%AE%E5%AF%B9%E6%8E%A5%E6%96%87%E6%A1%A3.docx?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20230531T024715Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Credential=admin%2F20230531%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=038e2ea71073761aa0370215621599649e9228177c332a0a79f784b1a6d9ee39
-        
+
         ///region 参数准备
         //第一部分-凭证范围
         String credential = request.getParameter("X-Amz-Credential");
@@ -180,7 +177,7 @@ public class S3AuthFilter implements LocalFilter{
         //第三部分-生成的签名
         String signature = request.getParameter("X-Amz-Signature");
         ///endregion
-        
+
         ///region 验证expire
         String expires = request.getParameter("X-Amz-Expires");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'");
@@ -193,7 +190,7 @@ public class S3AuthFilter implements LocalFilter{
             return false;
         }
         ///endregion
-        
+
         ///region 待签名字符串
         String stringToSign = "";
         //签名由4部分组成
@@ -227,7 +224,7 @@ public class S3AuthFilter implements LocalFilter{
                 }
             }
             queryStringBuilder.deleteCharAt(queryStringBuilder.lastIndexOf("&"));
-            
+
             hashedCanonicalRequest += queryStringBuilder + "\n";
         } else {
             hashedCanonicalRequest += queryString + "\n";
@@ -243,7 +240,7 @@ public class S3AuthFilter implements LocalFilter{
         hashedCanonicalRequest += contentHash;
         stringToSign += doHex(hashedCanonicalRequest);
         ///endregion
-        
+
         ///region 重新生成签名
         //计算签名的key
         byte[] kSecret = ("AWS4" + secretAccessKey).getBytes(StandardCharsets.UTF_8);
@@ -256,10 +253,10 @@ public class S3AuthFilter implements LocalFilter{
         //对签名编码处理
         String strHexSignature = doBytesToHex(authSignature);
         ///endregion
-        
+
         return signature.equals(strHexSignature);
     }
-    
+
     private String doHex(String data) {
         MessageDigest messageDigest;
         try {
@@ -272,16 +269,16 @@ public class S3AuthFilter implements LocalFilter{
         }
         return null;
     }
-    
+
     private byte[] doHmacSHA256(byte[] key, String data) throws Exception {
         String algorithm = "HmacSHA256";
         Mac mac = Mac.getInstance(algorithm);
         mac.init(new SecretKeySpec(key, algorithm));
         return mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
     }
-    
+
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
-    
+
     private String doBytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
@@ -291,13 +288,13 @@ public class S3AuthFilter implements LocalFilter{
         }
         return new String(hexChars).toLowerCase();
     }
-    
+
     public static Map<String, String> parseQueryParams(String queryString) {
         Map<String, String> queryParams = new HashMap<>();
         try {
             if (queryString != null && !queryString.isEmpty()) {
                 String[] queryParamsArray = queryString.split("\\&");
-                
+
                 for (String param : queryParamsArray) {
                     String[] keyValue = param.split("\\=");
                     if (keyValue.length == 1) {
@@ -316,5 +313,5 @@ public class S3AuthFilter implements LocalFilter{
         }
         return queryParams;
     }
-    
+
 }

@@ -7,5 +7,5 @@ package com.ruijing.base.local.upload.web.s3.service;
  */
 public interface ObjectService {
 
-    
+
 }

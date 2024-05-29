@@ -27,15 +27,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@RestController
-@RequestMapping("/s3")
+//@RestController
+//@RequestMapping("/s3")
 //api参考地址https://docs.aws.amazon.com/AmazonS3/latest/API/
 public class S3Controller {
 
     @Autowired
     private S3Service s3Service;
 
-    
+
     @GetMapping("/")
     public ResponseEntity<String> listBuckets() throws Exception {
         String xml = "";

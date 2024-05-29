@@ -10,5 +10,5 @@ import com.ruijing.base.local.upload.web.s3.options.PutBucketOptions;
 public interface BucketService {
 
     void putBucket(String bucketName, PutBucketOptions opts);
-    
+
 }
