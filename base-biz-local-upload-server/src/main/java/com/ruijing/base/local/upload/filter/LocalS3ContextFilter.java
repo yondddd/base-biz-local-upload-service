@@ -21,21 +21,18 @@ import java.util.Map;
 @Model("s3 context")
 @Order(20)
 @Component
-public class S3ContextFilter implements LocalFilter {
+public class LocalS3ContextFilter implements LocalFilter {
 
     @Override
     public void doFilter(HttpServletRequest servletRequest, HttpServletResponse servletResponse, LocalFilterChain filterChain) throws IOException, ServletException {
 
         // 如果是s3开头才加？
-        S3Context s3Context = S3Context.getS3Context();
-        if (s3Context != null) {
-            s3Context = S3Context.getCreateS3Context();
-        }
+        S3Context s3Context = S3Context.getCreateS3Context();
         String requestId = servletRequest.getHeader(S3Headers.AmzRequestID);
         Object pathVariables = servletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         if (pathVariables instanceof Map) {
-            for (Map.Entry<String, ?> entry : ((Map<String, ?>) pathVariables).entrySet()) {
-
+            for (Map.Entry<?, ?> entry : ((Map<?, ?>) pathVariables).entrySet()) {
+            
             }
 //            String chatbotId = (String)pathVariables.get("classId");
         }

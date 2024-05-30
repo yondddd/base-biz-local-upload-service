@@ -3,7 +3,6 @@ package com.ruijing.base.local.upload.filter;
 import com.ruijing.base.local.upload.config.SystemConfig;
 import com.ruijing.base.local.upload.util.ConvertOp;
 import com.ruijing.base.local.upload.util.StringUtil;
-import com.ruijing.fundamental.api.annotation.Model;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -28,11 +27,11 @@ import java.util.*;
  */
 @Order(10)
 @Component
-public class S3AuthFilter implements LocalFilter {
+public class LocalS3AuthFilter implements LocalFilter {
 
     private final SystemConfig systemConfig;
 
-    public S3AuthFilter(SystemConfig systemConfig) {
+    public LocalS3AuthFilter(SystemConfig systemConfig) {
         this.systemConfig = systemConfig;
     }
 

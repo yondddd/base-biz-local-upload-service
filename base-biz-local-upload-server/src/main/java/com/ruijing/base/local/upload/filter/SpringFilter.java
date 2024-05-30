@@ -13,15 +13,15 @@ import java.util.List;
 
 @Component
 @WebFilter(urlPatterns = "/*", asyncSupported = true)
-public class MySpringFilter implements Filter {
+public class SpringFilter implements Filter {
 
     private final List<LocalFilter> filterList;
 
-    public MySpringFilter(List<LocalFilter> filterList) {
+    public SpringFilter(List<LocalFilter> filterList) {
         this.filterList = filterList;
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MySpringFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpringFilter.class);
 
 
     @Override
