@@ -30,7 +30,7 @@ public class BucketController {
     @PutMapping(value = "/s3/{bucket}/")
     public ResponseEntity<String> putBucket(HttpServletRequest httpServerRequest, @PathVariable("bucket") String bucket) throws Exception {
         LOGGER.info("put" + bucket);
-        
+        // todo action鉴权、iam鉴权
         bucketService.putBucket(S3Util.urlDecode(bucket), PutBucketOptions.extractOptions(httpServerRequest));
         return ResponseEntity.ok().build();
     }

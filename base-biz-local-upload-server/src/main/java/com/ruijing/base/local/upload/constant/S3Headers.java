@@ -18,5 +18,8 @@ public class S3Headers {
 
     public static final String AmzRequestHostID = "x-amz-id-2";
 
+    // Create special flag to force create a bucket
+    public static final String BaseIOForceCreate = "x-baseio-force-create";
+    
 
 }

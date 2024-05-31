@@ -10,18 +10,18 @@ import com.ruijing.fundamental.api.annotation.Model;
 @Model("api error")
 public enum ApiErrorEnum {
 
-    ErrNoSuchKey(64, "NoSuchKey", "The specified key does not exist.", "0026-00000001");
-
+    ErrNoSuchKey(64, "NoSuchKey", "The specified key does not exist."),
+    
+    ErrInvalidRequest(174,"InvalidRequest","Invalid Request");
+    
     private final int id;
     private final String code;
     private final String description;
-    private final String ec;
 
-    ApiErrorEnum(int id, String code, String description, String ec) {
+    ApiErrorEnum(int id, String code, String description) {
         this.id = id;
         this.code = code;
         this.description = description;
-        this.ec = ec;
     }
 
     public int getId() {
@@ -34,10 +34,6 @@ public enum ApiErrorEnum {
 
     public String getDescription() {
         return description;
-    }
-
-    public String getEc() {
-        return ec;
     }
 
 }
