@@ -28,7 +28,7 @@ public class S3ClientUtil {
 
     private S3Client getClient() {
         S3Client s3 = S3Client.builder()
-                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(systemConfig.getUsername(), systemConfig.getPassword())))
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(systemConfig.getAccessKeyId(), systemConfig.getSecretAccessKey())))
                 .endpointOverride(URI.create(CommonUtil.getApiPath() + "s3/"))
                 .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).chunkedEncodingEnabled(false).build())
                 .region(Region.US_EAST_1)
@@ -38,7 +38,7 @@ public class S3ClientUtil {
 
     private S3Presigner getPresigner() {
         S3Presigner s3Presigner = S3Presigner.builder()
-                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(systemConfig.getUsername(), systemConfig.getPassword())))
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(systemConfig.getAccessKeyId(), systemConfig.getSecretAccessKey())))
                 .endpointOverride(URI.create(CommonUtil.getApiPath() + "s3/"))
                 .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).chunkedEncodingEnabled(false).build())
                 .region(Region.US_EAST_1)

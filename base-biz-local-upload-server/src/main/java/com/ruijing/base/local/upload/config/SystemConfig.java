@@ -6,10 +6,11 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "system")
 public class SystemConfig {
+
     private String tempPath;
     private String dataPath;
-    private String username;
-    private String password;
+    private String accessKeyId;
+    private String secretAccessKey;
 
     public String getTempPath() {
         return tempPath;
@@ -27,19 +28,19 @@ public class SystemConfig {
         this.dataPath = dataPath;
     }
 
-    public String getUsername() {
-        return username;
+    public String getAccessKeyId() {
+        return accessKeyId;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setAccessKeyId(String accessKeyId) {
+        this.accessKeyId = accessKeyId;
     }
 
-    public String getPassword() {
-        return password;
+    public String getSecretAccessKey() {
+        return secretAccessKey;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setSecretAccessKey(String secretAccessKey) {
+        this.secretAccessKey = secretAccessKey;
     }
 }
