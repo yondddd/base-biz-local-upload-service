@@ -6,5 +6,7 @@ package com.ruijing.base.local.upload.constant;
  * @description s3 method
  */
 public class S3Method {
+
+
     
 }
