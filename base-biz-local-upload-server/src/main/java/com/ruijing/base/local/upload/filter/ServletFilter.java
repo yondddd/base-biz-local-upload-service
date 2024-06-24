@@ -2,6 +2,7 @@ package com.ruijing.base.local.upload.filter;
 
 import com.ruijing.base.local.upload.config.SystemConfig;
 import com.ruijing.base.local.upload.filter.local.LocalHttpContext;
+import com.ruijing.base.local.upload.filter.local.LocalHttpFilter;
 import com.ruijing.base.local.upload.filter.local.LocalHttpFilterChain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,19 +13,21 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 @WebFilter(urlPatterns = "/*", asyncSupported = true)
 public class ServletFilter implements Filter {
-
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletFilter.class);
-
+    
     private final SystemConfig systemConfig;
-
+    
     public ServletFilter(SystemConfig systemConfig) {
         this.systemConfig = systemConfig;
     }
-
+    
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         LocalHttpFilterChain.getDefaultChain()
@@ -34,19 +37,20 @@ public class ServletFilter implements Filter {
                 .addFilter(new LocalS3ContextFilter());
         Filter.super.init(filterConfig);
     }
-
+    
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         try {
-            String servletPath = request.getServletPath();
-            if (servletPath.startsWith("/ping")) {
-                filterChain.doFilter(servletRequest, servletResponse);
+            List<LocalHttpFilter> customFilters = Collections.emptyList();
+            boolean pingRequest = request.getServletPath().startsWith("/ping");
+            if (!pingRequest) {
+                customFilters = LocalHttpFilterChain.getDefaultFilters();
             }
             LocalHttpFilterChain
                     .custom()
-                    .setFilters(LocalHttpFilterChain.getDefaultFilters())
+                    .setFilters(customFilters)
                     .setLastFilter((req, resp) -> filterChain.doFilter(request, response))
                     .doFilter(LocalHttpContext.custom().setRequest(request).setResponse(response));
         } catch (Exception e) {
@@ -55,5 +59,5 @@ public class ServletFilter implements Filter {
 //            ResponseUtil.writeErrorResponse();
         }
     }
-
+    
 }
