@@ -23,9 +23,11 @@ import java.util.List;
 
 @Component
 public class S3ClientUtil {
+    
+    
     @Autowired
     private SystemConfig systemConfig;
-
+    
     private S3Client getClient() {
         S3Client s3 = S3Client.builder()
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(systemConfig.getAccessKeyId(), systemConfig.getSecretAccessKey())))
@@ -35,7 +37,7 @@ public class S3ClientUtil {
                 .build();
         return s3;
     }
-
+    
     private S3Presigner getPresigner() {
         S3Presigner s3Presigner = S3Presigner.builder()
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(systemConfig.getAccessKeyId(), systemConfig.getSecretAccessKey())))
@@ -45,7 +47,7 @@ public class S3ClientUtil {
                 .build();
         return s3Presigner;
     }
-
+    
     public void createBucket(String bucketName) {
         S3Client s3Client = getClient();
         CreateBucketRequest request = CreateBucketRequest.builder()
@@ -54,7 +56,7 @@ public class S3ClientUtil {
         s3Client.createBucket(request);
         s3Client.close();
     }
-
+    
     public List<Bucket> getBucketList() {
         S3Client s3Client = getClient();
         ListBucketsRequest request = ListBucketsRequest.builder().build();
@@ -63,7 +65,7 @@ public class S3ClientUtil {
         s3Client.close();
         return bucketList;
     }
-
+    
     public boolean headBucket(String bucketName) {
         S3Client s3Client = getClient();
         boolean checkExist = true;
@@ -78,7 +80,7 @@ public class S3ClientUtil {
         s3Client.close();
         return checkExist;
     }
-
+    
     public void deleteBucket(String bucketName) {
         S3Client s3Client = getClient();
         DeleteBucketRequest request = DeleteBucketRequest.builder()
@@ -87,8 +89,8 @@ public class S3ClientUtil {
         s3Client.deleteBucket(request);
         s3Client.close();
     }
-
-
+    
+    
     public List<S3Object> getObjectList(String bucketName, String prefix) {
         S3Client s3Client = getClient();
         ListObjectsRequest request = ListObjectsRequest.builder().bucket(bucketName).prefix(prefix).delimiter("/").build();
@@ -97,7 +99,7 @@ public class S3ClientUtil {
         s3Client.close();
         return s3ObjectList;
     }
-
+    
     public HashMap<String, String> headObject(String bucketName, String key) {
         HashMap<String, String> headInfo = new HashMap<>();
         S3Client s3Client = getClient();
@@ -117,7 +119,7 @@ public class S3ClientUtil {
         }
         return headInfo;
     }
-
+    
     public void upload(String bucketName, String key, InputStream inputStream) throws Exception {
         S3Client s3Client = getClient();
         PutObjectRequest request = PutObjectRequest.builder().bucket(bucketName).key(key).build();
@@ -125,7 +127,7 @@ public class S3ClientUtil {
         s3Client.putObject(request, requestBody);
         s3Client.close();
     }
-
+    
     public byte[] getFileByte(String bucketName, String key) {
         S3Client s3Client = getClient();
         GetObjectRequest request = GetObjectRequest.builder()
@@ -137,7 +139,7 @@ public class S3ClientUtil {
         s3Client.close();
         return data;
     }
-
+    
     public String getDownLoadUrl(String bucketName, String key) {
         S3Presigner s3Presigner = getPresigner();
         GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucketName).key(key).build();
@@ -147,7 +149,7 @@ public class S3ClientUtil {
         s3Presigner.close();
         return url;
     }
-
+    
     public void delete(String bucketName, String key) {
         S3Client s3Client = getClient();
         DeleteObjectRequest request = DeleteObjectRequest.builder()
@@ -157,7 +159,7 @@ public class S3ClientUtil {
         s3Client.deleteObject(request);
         s3Client.close();
     }
-
+    
     public void copyObject(String sourceBucketName, String sourceKey, String targetBucketName, String targetKey) throws Exception {
         S3Client s3Client = getClient();
         CopyObjectRequest request = CopyObjectRequest.builder()
@@ -168,7 +170,7 @@ public class S3ClientUtil {
         s3Client.copyObject(request);
         s3Client.close();
     }
-
+    
     public String createMultipartUpload(String bucketName, String key) {
         String uploadID = "";
         S3Client s3Client = getClient();
@@ -180,7 +182,7 @@ public class S3ClientUtil {
         s3Client.close();
         return uploadID;
     }
-
+    
     public String uploadPart(String bucketName, String key, String uploadID, int partNumber, InputStream inputStream) {
         String eTag = "";
         S3Client s3Client = getClient();
@@ -201,7 +203,7 @@ public class S3ClientUtil {
         s3Client.close();
         return eTag;
     }
-
+    
     public String completeMultipartUpload(String bucketName, String key, String uploadID, List<CompletedPart> partList) {
         S3Client s3Client = getClient();
         CompleteMultipartUploadRequest request = CompleteMultipartUploadRequest.builder()

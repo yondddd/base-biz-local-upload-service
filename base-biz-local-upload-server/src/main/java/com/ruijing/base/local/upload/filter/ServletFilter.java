@@ -1,9 +1,11 @@
 package com.ruijing.base.local.upload.filter;
 
 import com.ruijing.base.local.upload.config.SystemConfig;
+import com.ruijing.base.local.upload.enums.ApiErrorEnum;
 import com.ruijing.base.local.upload.filter.local.LocalHttpContext;
 import com.ruijing.base.local.upload.filter.local.LocalHttpFilter;
 import com.ruijing.base.local.upload.filter.local.LocalHttpFilterChain;
+import com.ruijing.base.local.upload.web.s3.response.ApiResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -43,20 +45,18 @@ public class ServletFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         try {
-            List<LocalHttpFilter> customFilters = Collections.emptyList();
-            boolean pingRequest = request.getServletPath().startsWith("/ping");
-            if (!pingRequest) {
-                customFilters = LocalHttpFilterChain.getDefaultFilters();
-            }
+            List<LocalHttpFilter> customFilters = request.getServletPath().startsWith("/ping")
+                    ? Collections.emptyList()
+                    : LocalHttpFilterChain.getDefaultFilters();
+            
             LocalHttpFilterChain
                     .custom()
                     .setFilters(customFilters)
                     .setLastFilter((req, resp) -> filterChain.doFilter(request, response))
                     .doFilter(LocalHttpContext.custom().setRequest(request).setResponse(response));
         } catch (Exception e) {
-//            LOGGER.error();
-            // Bad Gateway
-//            ResponseUtil.writeErrorResponse();
+            LOGGER.error("<|>servletPath:{}<|>", request.getServletPath(), e);
+            ApiResponseUtil.writeError(ApiErrorEnum.ErrInvalidRequest);
         }
     }
     

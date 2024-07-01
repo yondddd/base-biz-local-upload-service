@@ -7,12 +7,12 @@ package com.ruijing.base.local.upload.manager;
  */
 
 public class SystemInitManager {
-
-
+    
+    
     public SystemInitManager() {
-
-        // 初始化
+        
+        // 初始化配置bucket
     }
-
-
+    
+    
 }

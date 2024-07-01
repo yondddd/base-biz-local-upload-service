@@ -10,8 +10,9 @@ import com.ruijing.fundamental.api.annotation.Model;
 @Model("bucket constant")
 public class BucketConstant {
     
+    /**
+     * 配置文件初始bucket
+     */
     public static final String BaseMetaBucket = ".baseio.sys";
-    
-    
     
 }
