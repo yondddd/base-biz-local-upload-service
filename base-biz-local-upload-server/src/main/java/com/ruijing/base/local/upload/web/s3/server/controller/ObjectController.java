@@ -1,4 +1,4 @@
-package com.ruijing.base.local.upload.web.s3.controller;
+package com.ruijing.base.local.upload.web.s3.server.controller;
 
 /**
  * @Description: object controller

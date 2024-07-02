@@ -1,4 +1,4 @@
-package com.ruijing.base.local.upload.web.s3.context;
+package com.ruijing.base.local.upload.web.s3.server.context;
 
 import com.ruijing.fundamental.api.annotation.Model;
 

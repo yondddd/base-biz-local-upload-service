@@ -1,7 +1,7 @@
 package com.ruijing.base.local.upload.util;
 
 
-import com.ruijing.base.local.upload.web.s3.context.S3Globals;
+import com.ruijing.base.local.upload.web.s3.server.context.S3Globals;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;

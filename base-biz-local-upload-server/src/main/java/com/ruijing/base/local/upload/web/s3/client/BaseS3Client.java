@@ -11,6 +11,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
 
 import java.net.URI;
 
@@ -22,12 +23,12 @@ import java.net.URI;
 @Model("s3 client")
 @Component
 public class BaseS3Client {
-    
+
     @Autowired
     private SystemConfig systemConfig;
-    
+
     private static S3Client S3_CLIENT;
-    
+
     {
         StaticCredentialsProvider provider = StaticCredentialsProvider.create(AwsBasicCredentials.create(systemConfig.getAccessKeyId(), systemConfig.getSecretAccessKey()));
         S3_CLIENT = S3Client.builder()
@@ -37,12 +38,10 @@ public class BaseS3Client {
                 .region(Region.US_EAST_1)
                 .build();
     }
-    
-    public static void createBucket(String bucketName) {
-        CreateBucketRequest request = CreateBucketRequest.builder()
-                .bucket(bucketName)
-                .build();
-        S3_CLIENT.createBucket(request);
+
+    public static CreateBucketResponse putBucket(CreateBucketRequest request) {
+        return S3_CLIENT.createBucket(request);
     }
-    
+
+
 }

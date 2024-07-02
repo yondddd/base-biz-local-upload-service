@@ -5,7 +5,7 @@ import com.ruijing.base.local.upload.enums.ApiErrorEnum;
 import com.ruijing.base.local.upload.filter.local.LocalHttpContext;
 import com.ruijing.base.local.upload.filter.local.LocalHttpFilter;
 import com.ruijing.base.local.upload.filter.local.LocalHttpFilterChain;
-import com.ruijing.base.local.upload.web.s3.response.ApiResponseUtil;
+import com.ruijing.base.local.upload.web.s3.server.response.ApiResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -21,15 +21,15 @@ import java.util.List;
 @Component
 @WebFilter(urlPatterns = "/*", asyncSupported = true)
 public class ServletFilter implements Filter {
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletFilter.class);
-    
+
     private final SystemConfig systemConfig;
-    
+
     public ServletFilter(SystemConfig systemConfig) {
         this.systemConfig = systemConfig;
     }
-    
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         LocalHttpFilterChain.getDefaultChain()
@@ -39,7 +39,7 @@ public class ServletFilter implements Filter {
                 .addFilter(new LocalS3ContextFilter());
         Filter.super.init(filterConfig);
     }
-    
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
@@ -48,7 +48,7 @@ public class ServletFilter implements Filter {
             List<LocalHttpFilter> customFilters = request.getServletPath().startsWith("/ping")
                     ? Collections.emptyList()
                     : LocalHttpFilterChain.getDefaultFilters();
-            
+
             LocalHttpFilterChain
                     .custom()
                     .setFilters(customFilters)
@@ -59,5 +59,5 @@ public class ServletFilter implements Filter {
             ApiResponseUtil.writeError(ApiErrorEnum.ErrInvalidRequest);
         }
     }
-    
+
 }

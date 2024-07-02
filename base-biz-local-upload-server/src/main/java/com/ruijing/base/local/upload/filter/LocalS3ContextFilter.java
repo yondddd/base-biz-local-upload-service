@@ -6,7 +6,7 @@ import com.ruijing.base.local.upload.filter.local.LocalFilterChain;
 import com.ruijing.base.local.upload.filter.local.LocalHttpContext;
 import com.ruijing.base.local.upload.filter.local.LocalHttpFilter;
 import com.ruijing.base.local.upload.util.IpUtil;
-import com.ruijing.base.local.upload.web.s3.context.S3Context;
+import com.ruijing.base.local.upload.web.s3.server.context.S3Context;
 import org.apache.http.HttpHeaders;
 import org.springframework.web.servlet.HandlerMapping;
 
