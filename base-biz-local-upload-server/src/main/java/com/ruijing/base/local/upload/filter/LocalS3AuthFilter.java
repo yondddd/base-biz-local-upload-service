@@ -21,19 +21,19 @@ import java.io.IOException;
  * @description s3 auth
  */
 public class LocalS3AuthFilter implements LocalHttpFilter {
-
+    
     private final SystemConfig systemConfig;
-
+    
     public LocalS3AuthFilter(SystemConfig systemConfig) {
         this.systemConfig = systemConfig;
     }
-
+    
     @Override
     public void doFilter(LocalHttpContext context, LocalFilterChain<LocalHttpContext, IOException, ServletException> chain) throws IOException, ServletException {
         HttpServletRequest servletRequest = context.getRequest();
         HttpServletResponse servletResponse = context.getResponse();
-
-        boolean flag = false;
+        
+        boolean flag = true;
         String authorization = servletRequest.getHeader("Authorization");
         if (StringUtils.isNotBlank(authorization)) {
             try {
@@ -57,5 +57,5 @@ public class LocalS3AuthFilter implements LocalHttpFilter {
         }
         chain.doFilter(context);
     }
-
+    
 }

@@ -15,10 +15,9 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 @EnableCat
 @EnablePearl
 public class AppRootApplication {
+    
     public static void main(String[] args) {
-
         ServiceBootApplication.main(AppRootApplication.class, args);
     }
-
-
+    
 }

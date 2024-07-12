@@ -18,15 +18,15 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RestController
 public class BucketController {
-
+    
     private final BucketService bucketService;
-
+    
     public BucketController(BucketService bucketService) {
         this.bucketService = bucketService;
     }
-
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(BucketController.class);
-
+    
     @PutMapping(value = "/s3/{bucket}")
     public @ResponseBody ResponseEntity<String> putBucket(HttpServletRequest httpServerRequest, @PathVariable("bucket") String bucket) throws Exception {
         LOGGER.info("putBucket:{}", bucket);
@@ -37,13 +37,13 @@ public class BucketController {
         bucketService.putBucket(putBucketReq);
         return ResponseEntity.ok().build();
     }
-
-
+    
+    
     @DeleteMapping(value = "/s3/{bucket}")
     public ResponseEntity<String> delBucket(HttpServletRequest httpServerRequest, @PathVariable("bucket") String bucket) throws Exception {
         LOGGER.info("del" + bucket);
 //        bucketService.putBucket(S3Util.urlDecode(bucket), PutBucketOptions.extractOptions(httpServerRequest));
         return ResponseEntity.ok().build();
     }
-
+    
 }

@@ -3,7 +3,6 @@ package com.ruijing.base.local.upload.web.s3.client;
 import com.ruijing.base.local.upload.config.SystemConfig;
 import com.ruijing.base.local.upload.util.CommonUtil;
 import com.ruijing.fundamental.api.annotation.Model;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -23,13 +22,25 @@ import java.net.URI;
 @Model("s3 client")
 @Component
 public class BaseS3Client {
-
-    @Autowired
-    private SystemConfig systemConfig;
-
+    
+    private final SystemConfig systemConfig;
+    
     private static S3Client S3_CLIENT;
-
-    {
+    
+    public BaseS3Client(SystemConfig systemConfig) {
+        this.systemConfig = systemConfig;
+    }
+    
+    public CreateBucketResponse putBucket(CreateBucketRequest request) {
+        init();
+        return S3_CLIENT.createBucket(request);
+    }
+    
+    
+    public void init() {
+        if (S3_CLIENT != null) {
+            return;
+        }
         StaticCredentialsProvider provider = StaticCredentialsProvider.create(AwsBasicCredentials.create(systemConfig.getAccessKeyId(), systemConfig.getSecretAccessKey()));
         S3_CLIENT = S3Client.builder()
                 .credentialsProvider(provider)
@@ -38,10 +49,5 @@ public class BaseS3Client {
                 .region(Region.US_EAST_1)
                 .build();
     }
-
-    public static CreateBucketResponse putBucket(CreateBucketRequest request) {
-        return S3_CLIENT.createBucket(request);
-    }
-
-
+    
 }

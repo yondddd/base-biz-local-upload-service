@@ -21,29 +21,30 @@ import java.util.Map;
  * @description s3 context
  */
 public class LocalS3ContextFilter implements LocalHttpFilter {
-
+    
     @Override
     public void doFilter(LocalHttpContext context, LocalFilterChain<LocalHttpContext, IOException, ServletException> chain) throws IOException, ServletException {
-
+        
         HttpServletRequest servletRequest = context.getRequest();
-
+        
         if (!servletRequest.getServletPath().startsWith("/s3")) {
             chain.doFilter(context);
+            return;
         }
-
+        
         S3Context s3Context = S3Context.getCreateS3Context()
                 .setRequestId(servletRequest.getHeader(S3Headers.AmzRequestID))
                 .setRemoteHost(IpUtil.getIpFromContext(servletRequest))
                 .setHost(IpUtil.getHostName(servletRequest))
                 .setUserAgent(servletRequest.getHeader(HttpHeaders.USER_AGENT))
                 .setVersionId(servletRequest.getHeader(S3Headers.VersionID));
-
+        
         Object pathVariables = servletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         if (pathVariables instanceof Map) {
             s3Context.setBucketName((String) ((Map<?, ?>) pathVariables).get(S3Constant.BUCKET));
             s3Context.setObjectName((String) ((Map<?, ?>) pathVariables).get(S3Constant.OBJECT));
         }
-
+        
         chain.doFilter(context);
     }
 }

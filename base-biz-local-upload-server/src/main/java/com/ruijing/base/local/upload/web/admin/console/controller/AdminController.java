@@ -17,6 +17,7 @@ import software.amazon.awssdk.services.s3.model.CompletedPart;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,21 +28,23 @@ import java.util.Map;
 @RequestMapping("/console")
 @ConditionalOnProperty(name = "system.console", havingValue = "true", matchIfMissing = false)
 public class AdminController {
-
+    
     @Autowired
     private S3ClientUtil s3ClientUtil;
-
+    @Resource
+    private BaseS3Client baseS3Client;
+    
     @PostMapping("/putBucket")
     @ResponseBody
     public RemoteResponse<Boolean> putBucket(@RequestBody BucketCreateReq req) {
         CreateBucketRequest request = CreateBucketRequest.builder()
                 .bucket(req.getBucketName())
                 .build();
-        BaseS3Client.putBucket(request);
+        baseS3Client.putBucket(request);
         return RemoteResponse.success();
     }
-
-
+    
+    
     @PostMapping("/listBucket")
     @ResponseBody
     public Result listBucket() {
@@ -55,7 +58,7 @@ public class AdminController {
         }
         return Result.okResult().add("obj", bucketInfoList);
     }
-
+    
     @PostMapping("/headBucket")
     @ResponseBody
     public Result headBucket(@RequestBody Map<String, Object> params) {
@@ -63,7 +66,7 @@ public class AdminController {
         boolean checkExist = s3ClientUtil.headBucket(bucketName);
         return Result.okResult().add("obj", checkExist);
     }
-
+    
     @PostMapping("/deleteBucket")
     @ResponseBody
     public Result deleteBucket(@RequestBody Map<String, Object> params) {
@@ -71,7 +74,7 @@ public class AdminController {
         s3ClientUtil.deleteBucket(bucketName);
         return Result.okResult();
     }
-
+    
     @PostMapping("/listObjects")
     @ResponseBody
     public Result listObjects(@RequestBody Map<String, Object> params) {
@@ -90,7 +93,7 @@ public class AdminController {
         }
         return Result.okResult().add("obj", objectInfoList);
     }
-
+    
     @PostMapping("/headObject")
     @ResponseBody
     public Result headObject(@RequestBody Map<String, Object> params) {
@@ -103,7 +106,7 @@ public class AdminController {
             return Result.okResult().add("obj", true).add("head", headInfo);
         }
     }
-
+    
     @PostMapping("/upload")
     @ResponseBody
     public Result upload(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws Exception {
@@ -112,7 +115,7 @@ public class AdminController {
         s3ClientUtil.upload(bucketName, key, file.getInputStream());
         return Result.okResult();
     }
-
+    
     @PostMapping("/createMultipartUpload")
     @ResponseBody
     public Result createMultipartUpload(@RequestBody Map<String, Object> params) throws Exception {
@@ -121,7 +124,7 @@ public class AdminController {
         String uploadID = s3ClientUtil.createMultipartUpload(bucketName, key);
         return Result.okResult().add("obj", uploadID);
     }
-
+    
     @PostMapping("/uploadPart")
     @ResponseBody
     public Result uploadPart(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws Exception {
@@ -132,7 +135,7 @@ public class AdminController {
         String etag = s3ClientUtil.uploadPart(bucketName, key, uploadID, partNumber, file.getInputStream());
         return Result.okResult().add("obj", etag);
     }
-
+    
     @PostMapping("/completeMultipartUpload")
     @ResponseBody
     public Result completeMultipartUpload(@RequestBody Map<String, Object> params, HttpServletRequest request) throws Exception {
@@ -151,7 +154,7 @@ public class AdminController {
         String fileEtag = s3ClientUtil.completeMultipartUpload(bucketName, key, uploadID, partList);
         return Result.okResult().add("obj", fileEtag);
     }
-
+    
     @PostMapping("/getFileBytes")
     @ResponseBody
     public Result getFileBytes(@RequestBody Map<String, Object> params) throws Exception {
@@ -160,7 +163,7 @@ public class AdminController {
         byte[] data = s3ClientUtil.getFileByte(bucketName, key);
         return Result.okResult().add("obj", data);
     }
-
+    
     @PostMapping("/download")
     @ResponseBody
     public Result download(@RequestBody Map<String, Object> params) throws Exception {
@@ -169,7 +172,7 @@ public class AdminController {
         String url = s3ClientUtil.getDownLoadUrl(bucketName, key);
         return Result.okResult().add("obj", url);
     }
-
+    
     @PostMapping("/delete")
     @ResponseBody
     public Result delete(@RequestBody Map<String, Object> params) throws Exception {
@@ -178,7 +181,7 @@ public class AdminController {
         s3ClientUtil.delete(bucketName, key);
         return Result.okResult();
     }
-
+    
     @PostMapping("/copy")
     @ResponseBody
     public Result copy(@RequestBody Map<String, Object> params) throws Exception {
@@ -189,5 +192,5 @@ public class AdminController {
         s3ClientUtil.copyObject(sourceBucketName, sourceKey, targetBucketName, targetKey);
         return Result.okResult();
     }
-
+    
 }
