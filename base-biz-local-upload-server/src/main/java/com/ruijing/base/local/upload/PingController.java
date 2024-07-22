@@ -17,81 +17,97 @@ import java.util.List;
  **/
 @GateWayController(requestMapping = "/")
 public class PingController {
-
+    
     @Ping
     public String ping() {
         return "pong";
     }
-
+    
     private static final String FE_TABLE = "fe_log";
     private static final String PAGE_TABLE = "belong_page_view_log_day";
     private static final String EVENT_TABLE = "belong_event_view_log_day";
     private static final String PAGE_FILED = "belongPage";
     private static final String URL_FILED = "url";
-
+    
     public static void main(String[] args) {
         boolean prod = false;
         String oldVersion = "";
         String newVersion = "_1";
         // 前端域名替换上线时间
-        List<Integer> belongSite = Lists.newArrayList(100221, 100222, 100224, 100224, 100225, 260);
+        List<Integer> belongSite = new ArrayList<>();
+        if (prod) {
+            belongSite = Lists.newArrayList(221, 224, 225, 223, 222, 1087, 294, 260, 250, 270);
+        } else {
+            belongSite = Lists.newArrayList(100221, 100224, 100222, 100225, 100223,
+                    226, 100294, 250, 260, 270);
+        }
         String onlineTime = "2024-06-10 20:00:00";
         List<Pair<String, String>> list = new ArrayList<>();
-        list.add(Pair.of("m.test.rj-info.com/BIO/#/", "mbio.test.rj-info.com/"));
-        list.add(Pair.of("m.test.rj-info.com/LAB/#/", "mscholar.test.rj-info.com/"));
-        list.add(Pair.of("m.test.rj-info.com/EBC/#/", "mebc.test.rj-info.com/"));
-        list.add(Pair.of("m.test.rj-info.com/SRS/#/", "msrs.test.rj-info.com/"));
-        list.add(Pair.of("m.test.rj-info.com/AI/#/", "mai.test.rj-info.com/"));
+        list.add(Pair.of("m.test.rj-info.com/PI/#/", "m.test.rj-info.com/PI/"));
+        list.add(Pair.of("m.test.rj-info.com/SP/#/", "m.test.rj-info.com/SP/"));
+        list.add(Pair.of("m.test.rj-info.com/Partner/#/", "m.test.rj-info.com/Partner/"));
+        list.add(Pair.of("m.test.rj-info.com/TDC/#/", "m.test.rj-info.com/TDC/"));
+        list.add(Pair.of("m.test.rj-info.com/SCHOOL/#/", "m.test.rj-info.com/SCHOOL/"));
+        list.add(Pair.of("m.test.rj-info.com/EYEAI/#/", "m.test.rj-info.com/EYEAI/"));
+        list.add(Pair.of("m.test.rj-info.com/SRM/#/", "m.test.rj-info.com/SRM/"));
+        list.add(Pair.of("m.test.rj-info.com/OMS/#/", "m.test.rj-info.com/OMS/"));
+        list.add(Pair.of("m.test.rj-info.com/LAB/#/", "m.test.rj-info.com/LAB/"));
+        list.add(Pair.of("m.test.rj-info.com/BIO/#/", "m.test.rj-info.com/BIO/"));
+        list.add(Pair.of("m.test.rj-info.com/EBC/#/", "m.test.rj-info.com/EBC/"));
+        list.add(Pair.of("m.test.rj-info.com/SRS/#/", "m.test.rj-info.com/SRS/"));
+        list.add(Pair.of("m.test.rj-info.com/AI/#/", "m.test.rj-info.com/AI/"));
+        list.add(Pair.of("m.test.rj-info.com/ECO/#/", "m.test.rj-info.com/ECO/"));
         System.out.println("\n\n");
-
+        
+        
         System.out.println("测试环境自己弄个库复制下数据模拟处理下，没问题再执行");
         System.out.println("1.访问之前的旧链接，确认基础表已经没有旧链接数据进来！！！");
         System.out.println(selectOld(list, onlineTime));
         System.out.println("\n\n");
-
+        
         System.out.println("2.创建新表和物化视图双写");
         // 创建新页面聚合表
         System.out.println(pageTableCreat(newVersion) + "\n");
         // 事件聚合表
         System.out.println(eventTableCreat(newVersion) + "\n");
         System.out.println("\n\n");
-
+        
         System.out.println("3.记住上面新数据开始聚合的时间，处理旧表这个时间点前的数据");
         // clickhouse 基础表url处理
         String updateFeLogUrlSql = "ALTER TABLE base." + FE_TABLE + " UPDATE " + URL_FILED + " = " + getUpdateFeLogSql(URL_FILED, list, belongSite);
         System.out.println(updateFeLogUrlSql);
         System.out.println("\n\n");
-
+        
         System.out.println("4.查看任务进度，一个执行完再执行另外一个");
         System.out.println("SELECT command, is_done FROM system.mutations WHERE table = 'fe_log';\n");
-
+        
         // clickhouse 基础表page处理
         String updateFeLogPageSql = "ALTER TABLE base." + FE_TABLE + " UPDATE " + PAGE_FILED + " = " + getUpdateFeLogSql(PAGE_FILED, list, belongSite);
         System.out.println(updateFeLogPageSql);
         System.out.println("\n\n");
-
+        
         System.out.println("5.初始化新表聚合数据，从旧表替换过去就行");
         System.out.println(copyPageOld(list, newVersion) + "\n");
         System.out.println(copyEventOld(list, newVersion) + "\n");
-
-
+        
+        
         System.out.println("6.把新表视图加上");
         // 页面物化视图
         System.out.println(pageViewCreat(newVersion) + "\n");
         // 事件物化视图
         System.out.println(eventViewCreat(newVersion));
-
+        
         System.out.println("\n\n ");
         System.out.println("7.处理推广服务和统计服务链接\n");
         System.out.println("https://gateway.test.rj-info.com/base/popularize/back/replacePopularizeUrl");
         System.out.println("https://gateway.test.rj-info.com/base/statistics/back/replaceUrl");
         System.out.println(getJsonStrings(list));
-
+        
         System.out.println("8.验收没问题后，删除旧页面、事件表与视图");
         System.out.println(deleteOld(oldVersion));
         System.out.println("9.切换配置中心表配置");
     }
-
+    
     /**
      * 查询旧表有没有旧数据进来
      *
@@ -102,7 +118,7 @@ public class PingController {
     private static String selectOld(List<Pair<String, String>> list, String onlineTime) {
         StringBuilder sb = new StringBuilder();
         sb.append("select * from base.").append(FE_TABLE).append(" where (");
-
+        
         for (int i = 0; i < list.size(); i++) {
             Pair<String, String> pair = list.get(i);
             sb.append("belongPage like '").append("%").append(pair.getLeft()).append("%' or url like '").append(pair.getLeft()).append("'").append("\n");
@@ -110,17 +126,17 @@ public class PingController {
                 sb.append(" or ");
             }
         }
-
+        
         sb.append(") and time >= '").append(onlineTime).append("' order by time desc limit 1");
-
+        
         return sb.toString();
     }
-
-
+    
+    
     private static String getUpdateFeLogSql(String filed, List<Pair<String, String>> list, List<Integer> belongSite) {
         StringBuilder sql = new StringBuilder();
         sql.append("CASE\n");
-
+        
         for (Pair<String, String> pair : list) {
             sql.append("    WHEN ")
                     .append(filed)
@@ -135,22 +151,22 @@ public class PingController {
                     .append(pair.getRight())
                     .append("')\n");
         }
-
+        
         sql.append("    ELSE ").append(filed).append("\n");
         sql.append("END\n");
         sql.append("WHERE \n");
         sql.append("  belongSite IN (");
-
+        
         for (int i = 0; i < belongSite.size(); i++) {
             sql.append(belongSite.get(i));
             if (i < belongSite.size() - 1) {
                 sql.append(", ");
             }
         }
-
+        
         sql.append(") \n");
         sql.append("  AND (");
-
+        
         for (int i = 0; i < list.size(); i++) {
             sql.append(filed)
                     .append(" LIKE '")
@@ -161,32 +177,32 @@ public class PingController {
                 sql.append("\n   OR ");
             }
         }
-
+        
         sql.append(");");
         return sql.toString();
     }
-
-
+    
+    
     private static String getJsonStrings(List<Pair<String, String>> list) {
         Gson gson = new Gson();
         StringBuilder jsonStrings = new StringBuilder();
-
+        
         for (Pair<String, String> pair : list) {
             JsonObject json = new JsonObject();
             json.addProperty("fromUrl", pair.getLeft());
             json.addProperty("toUrl", pair.getRight());
             json.addProperty("update", true);
-
+            
             String jsonString = gson.toJson(json);
-
+            
             jsonStrings.append(jsonString).append("\n");
         }
-
+        
         return jsonStrings.toString();
     }
-
+    
     private static String pageTableCreat(String version) {
-
+        
         return "CREATE TABLE base." + PAGE_TABLE + version + "\n" +
                 "(\n" +
                 "\n" +
@@ -212,8 +228,8 @@ public class PingController {
                 " create_time)\n" +
                 "SETTINGS index_granularity = 8192;";
     }
-
-
+    
+    
     private static String eventTableCreat(String version) {
         return "CREATE TABLE base." + EVENT_TABLE + version + "\n" +
                 "(\n" +
@@ -252,53 +268,53 @@ public class PingController {
                 " create_time)\n" +
                 "SETTINGS index_granularity = 8192;";
     }
-
+    
     private static String copyPageOld(List<Pair<String, String>> list, String version) {
         StringBuilder caseStatement = new StringBuilder();
         caseStatement.append("CASE");
-
+        
         for (Pair<String, String> pair : list) {
             caseStatement.append(" WHEN belong_page LIKE '").append("%").append(pair.getLeft()).append("%' THEN replaceOne(belong_page, '")
                     .append(pair.getLeft()).append("', '").append(pair.getRight()).append("')").append("\n");
         }
-
+        
         caseStatement.append(" ELSE belong_page END");
-
+        
         String sql = "INSERT INTO base." + PAGE_TABLE + version +
                 " SELECT belong_site, org_id, " + caseStatement + " AS belong_page, pv, uv, create_time " +
                 "FROM base." + PAGE_TABLE;
-
+        
         return sql;
     }
-
-
+    
+    
     private static String copyEventOld(List<Pair<String, String>> list, String newVersion) {
         StringBuilder caseStatementBelongPage = new StringBuilder();
         StringBuilder caseStatementUrl = new StringBuilder();
-
+        
         caseStatementBelongPage.append("CASE");
         caseStatementUrl.append("CASE");
-
+        
         for (Pair<String, String> pair : list) {
             caseStatementBelongPage.append(" WHEN belong_page LIKE '").append("%").append(pair.getLeft()).append("%' THEN replaceOne(belong_page, '")
                     .append(pair.getLeft()).append("', '").append(pair.getRight()).append("')").append("\n");
             caseStatementUrl.append(" WHEN url LIKE '").append("%").append(pair.getLeft()).append("%' THEN replaceOne(url, '")
                     .append(pair.getLeft()).append("', '").append(pair.getRight()).append("')").append("\n");
         }
-
+        
         caseStatementBelongPage.append(" ELSE belong_page END");
         caseStatementUrl.append(" ELSE url END");
-
+        
         String sql = "INSERT INTO base." + EVENT_TABLE + newVersion +
                 " SELECT belong_site, event_id, event_tag, event_category, org_id, " +
                 caseStatementBelongPage + " AS belong_page, " +
                 caseStatementUrl + " AS url, pv, uv, create_time " +
                 "FROM base." + EVENT_TABLE;
-
+        
         return sql;
     }
-
-
+    
+    
     private static String pageViewCreat(String version) {
         return "CREATE MATERIALIZED VIEW base.base_belong_page_view_log_day_view" + version + " TO base.belong_page_view_log_day" + version + "\n" +
                 "(\n" +
@@ -339,7 +355,7 @@ public class PingController {
                 "\n" +
                 "    time";
     }
-
+    
     private static String eventViewCreat(String version) {
         return "CREATE MATERIALIZED VIEW base.base_belong_event_view_log_day_view" + version + " TO base.belong_event_view_log_day" + version + "\n" +
                 "(\n" +
@@ -404,7 +420,7 @@ public class PingController {
                 "\n" +
                 "    time";
     }
-
+    
     private static String deleteOld(String oldVersion) {
         String dropPage = "DROP TABLE IF EXISTS base." + PAGE_TABLE + oldVersion + ";";
         String dropPageView = "DROP VIEW IF EXISTS base.base_" + PAGE_TABLE + "_view" + oldVersion + ";";
@@ -415,7 +431,7 @@ public class PingController {
                 dropEvent + "\n" +
                 dropEventView + "\n";
         return stringBuilder;
-
+        
     }
-
+    
 }
