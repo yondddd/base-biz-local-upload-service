@@ -34,31 +34,10 @@ public class PingController {
         String oldVersion = "";
         String newVersion = "_1";
         // 前端域名替换上线时间
-        List<Integer> belongSite = new ArrayList<>();
-        if (prod) {
-            belongSite = Lists.newArrayList(221, 224, 225, 223, 222, 1087, 294, 260, 250, 270);
-        } else {
-            belongSite = Lists.newArrayList(100221, 100224, 100222, 100225, 100223,
-                    226, 100294, 250, 260, 270);
-        }
-        String onlineTime = "2024-06-10 20:00:00";
-        List<Pair<String, String>> list = new ArrayList<>();
-        list.add(Pair.of("m.test.rj-info.com/PI/#/", "m.test.rj-info.com/PI/"));
-        list.add(Pair.of("m.test.rj-info.com/SP/#/", "m.test.rj-info.com/SP/"));
-        list.add(Pair.of("m.test.rj-info.com/Partner/#/", "m.test.rj-info.com/Partner/"));
-        list.add(Pair.of("m.test.rj-info.com/TDC/#/", "m.test.rj-info.com/TDC/"));
-        list.add(Pair.of("m.test.rj-info.com/SCHOOL/#/", "m.test.rj-info.com/SCHOOL/"));
-        list.add(Pair.of("m.test.rj-info.com/EYEAI/#/", "m.test.rj-info.com/EYEAI/"));
-        list.add(Pair.of("m.test.rj-info.com/SRM/#/", "m.test.rj-info.com/SRM/"));
-        list.add(Pair.of("m.test.rj-info.com/OMS/#/", "m.test.rj-info.com/OMS/"));
-        list.add(Pair.of("m.test.rj-info.com/LAB/#/", "m.test.rj-info.com/LAB/"));
-        list.add(Pair.of("m.test.rj-info.com/BIO/#/", "m.test.rj-info.com/BIO/"));
-        list.add(Pair.of("m.test.rj-info.com/EBC/#/", "m.test.rj-info.com/EBC/"));
-        list.add(Pair.of("m.test.rj-info.com/SRS/#/", "m.test.rj-info.com/SRS/"));
-        list.add(Pair.of("m.test.rj-info.com/AI/#/", "m.test.rj-info.com/AI/"));
-        list.add(Pair.of("m.test.rj-info.com/ECO/#/", "m.test.rj-info.com/ECO/"));
+        List<Integer> belongSite = listBelongSite(prod);
+        String onlineTime = "2024-07-23 20:00:00";
+        List<Pair<String, String>> list = listBelongSiteUrl(prod);
         System.out.println("\n\n");
-        
         
         System.out.println("测试环境自己弄个库复制下数据模拟处理下，没问题再执行");
         System.out.println("1.访问之前的旧链接，确认基础表已经没有旧链接数据进来！！！");
@@ -432,6 +411,31 @@ public class PingController {
                 dropEventView + "\n";
         return stringBuilder;
         
+    }
+    
+    
+    private static List<Pair<String, String>> listBelongSiteUrl(boolean prod) {
+        List<Pair<String, String>> data = new ArrayList<>();
+        ArrayList<String> list = Lists.newArrayList("PI", "SP", "Partner", "TDC", "SCHOOL", "EYEAI", "SRM", "OMS", "LAB", "BIO", "EBC", "SRS", "AI", "ECO");
+        if (prod) {
+            for (String sign : list) {
+                data.add(Pair.of(String.format("m.rjmart.cn/%s/#/", sign), String.format("m.rjmart.cn/%s/", sign)));
+            }
+            return data;
+        }
+        for (String sign : list) {
+            data.add(Pair.of(String.format("m.test.rj-info.com/%s/#/", sign), String.format("m.test.rj-info.com/%s/", sign)));
+        }
+        return data;
+    }
+    
+    private static List<Integer> listBelongSite(boolean prod) {
+        if (prod) {
+            return Lists.newArrayList(221, 224, 225, 223, 222, 1087, 294, 260, 250, 270);
+        } else {
+            return Lists.newArrayList(100221, 100224, 100222, 100225, 100223,
+                    226, 100294, 250, 260, 270);
+        }
     }
     
 }

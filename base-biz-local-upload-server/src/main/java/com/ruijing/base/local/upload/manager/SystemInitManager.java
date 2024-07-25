@@ -36,6 +36,8 @@ public class SystemInitManager implements CommandLineRunner {
         if (!Files.exists(baseBucket)) {
             Files.createDirectory(baseBucket);
         }
+        // 初始化Access Key Id ,Access Key Secret
+        
     }
     
 }
