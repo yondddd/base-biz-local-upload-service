@@ -11,6 +11,8 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
+import software.amazon.awssdk.services.s3.model.DeleteBucketRequest;
+import software.amazon.awssdk.services.s3.model.DeleteBucketResponse;
 
 import java.net.URI;
 
@@ -36,6 +38,13 @@ public class BaseS3Client {
         return S3_CLIENT.createBucket(request);
     }
     
+    public DeleteBucketResponse delBucket(DeleteBucketRequest request) {
+        init();
+        return S3_CLIENT.deleteBucket(request);
+    }
+    
+    public void outOb() {
+    }
     
     public void init() {
         if (S3_CLIENT != null) {

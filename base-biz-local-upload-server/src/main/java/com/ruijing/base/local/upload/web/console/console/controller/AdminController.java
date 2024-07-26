@@ -1,4 +1,4 @@
-package com.ruijing.base.local.upload.web.admin.console.controller;
+package com.ruijing.base.local.upload.web.console.console.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -6,7 +6,8 @@ import com.ruijing.base.local.upload.model.Bucket;
 import com.ruijing.base.local.upload.model.Result;
 import com.ruijing.base.local.upload.util.ConvertOp;
 import com.ruijing.base.local.upload.util.S3ClientUtil;
-import com.ruijing.base.local.upload.web.admin.console.req.BucketCreateReq;
+import com.ruijing.base.local.upload.web.console.console.req.BucketCreateReq;
+import com.ruijing.base.local.upload.web.console.console.req.BucketDelReq;
 import com.ruijing.base.local.upload.web.s3.client.BaseS3Client;
 import com.ruijing.fundamental.api.remote.RemoteResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.CompletedPart;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.DeleteBucketRequest;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 import javax.annotation.Resource;
@@ -41,6 +43,17 @@ public class AdminController {
                 .bucket(req.getBucketName())
                 .build();
         baseS3Client.putBucket(request);
+        return RemoteResponse.success();
+    }
+    
+    
+    @PostMapping("/delBucket")
+    @ResponseBody
+    public RemoteResponse<Boolean> delBucket(@RequestBody BucketDelReq req) {
+        DeleteBucketRequest request = DeleteBucketRequest.builder()
+                .bucket(req.getBucketName())
+                .build();
+        baseS3Client.delBucket(request);
         return RemoteResponse.success();
     }
     

@@ -100,7 +100,7 @@ public class PingController {
         
         for (int i = 0; i < list.size(); i++) {
             Pair<String, String> pair = list.get(i);
-            sb.append("belongPage like '").append("%").append(pair.getLeft()).append("%' or url like '").append(pair.getLeft()).append("'").append("\n");
+            sb.append("belongPage like '").append("%").append(pair.getLeft()).append("%' or url like '%").append(pair.getLeft()).append("%'").append("\n");
             if (i < list.size() - 1) {
                 sb.append(" or ");
             }
