@@ -1,8 +1,8 @@
-package com.ruijing.base.local.upload.web.business.controller;
+package com.ruijing.base.local.upload.web.biz.controller;
 
 import com.ruijing.base.biz.api.server.api.rpc.annotation.RpcMethod;
 import com.ruijing.base.biz.api.server.api.rpc.annotation.RpcMethodParam;
-import com.ruijing.base.local.upload.web.business.resp.QrCodeResp;
+import com.ruijing.base.local.upload.web.biz.resp.QrCodeResp;
 import com.ruijing.fundamental.api.remote.RemoteResponse;
 import com.ruijing.fundamental.cat.annotation.CatAnnotation;
 import org.springframework.web.bind.annotation.RequestMapping;

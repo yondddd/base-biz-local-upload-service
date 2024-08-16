@@ -1,4 +1,4 @@
-package com.ruijing.base.local.upload.web.business.util;
+package com.ruijing.base.local.upload.web.biz.util;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

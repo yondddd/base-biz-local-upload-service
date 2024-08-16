@@ -1,4 +1,4 @@
-package com.ruijing.base.local.upload.web.business.req;
+package com.ruijing.base.local.upload.web.biz.req;
 
 import com.ruijing.base.biz.api.server.api.rpc.annotation.RpcModel;
 import com.ruijing.base.biz.api.server.api.rpc.annotation.RpcModelProperty;

@@ -30,12 +30,12 @@ public class PingController {
     private static final String URL_FILED = "url";
     
     public static void main(String[] args) {
-        boolean prod = false;
+        boolean prod = true;
         String oldVersion = "";
         String newVersion = "_1";
         // 前端域名替换上线时间
         List<Integer> belongSite = listBelongSite(prod);
-        String onlineTime = "2024-07-23 20:00:00";
+        String onlineTime = "2024-08-10 18:00:00";
         List<Pair<String, String>> list = listBelongSiteUrl(prod);
         System.out.println("\n\n");
         

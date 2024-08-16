@@ -7,34 +7,34 @@ import com.ruijing.base.local.upload.web.s3.server.options.PutBucketOptions;
  * @date 7/2/2024
  * @description put bucket request
  */
-public class PutBucketReq {
-
+public class BucketPutReq {
+    
     private String bucketName;
-
+    
     private PutBucketOptions options;
-
-    public static PutBucketReq custom() {
-        return new PutBucketReq();
+    
+    public static BucketPutReq custom() {
+        return new BucketPutReq();
     }
-
+    
     public String getBucketName() {
         return bucketName;
     }
-
-    public PutBucketReq setBucketName(String bucketName) {
+    
+    public BucketPutReq setBucketName(String bucketName) {
         this.bucketName = bucketName;
         return this;
     }
-
+    
     public PutBucketOptions getOptions() {
         return options;
     }
-
-    public PutBucketReq setOptions(PutBucketOptions options) {
+    
+    public BucketPutReq setOptions(PutBucketOptions options) {
         this.options = options;
         return this;
     }
-
+    
     @Override
     public String toString() {
         return "PutBucketReq{" +

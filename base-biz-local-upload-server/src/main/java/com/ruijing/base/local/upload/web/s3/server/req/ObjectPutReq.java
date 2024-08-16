@@ -1,24 +1,27 @@
 package com.ruijing.base.local.upload.web.s3.server.req;
 
+import java.io.InputStream;
+
 /**
  * @Description: put object
  * @Author: WangJieLong
  * @Date: 2024-07-25
  */
-public class PutObjectReq {
+public class ObjectPutReq {
     
     private String bucketName;
     private String objectName;
+    private InputStream inputStream;
     
-    public static PutObjectReq custom() {
-        return new PutObjectReq();
+    public static ObjectPutReq custom() {
+        return new ObjectPutReq();
     }
     
     public String getBucketName() {
         return bucketName;
     }
     
-    public PutObjectReq setBucketName(String bucketName) {
+    public ObjectPutReq setBucketName(String bucketName) {
         this.bucketName = bucketName;
         return this;
     }
@@ -27,8 +30,17 @@ public class PutObjectReq {
         return objectName;
     }
     
-    public PutObjectReq setObjectName(String objectName) {
+    public ObjectPutReq setObjectName(String objectName) {
         this.objectName = objectName;
+        return this;
+    }
+    
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+    
+    public ObjectPutReq setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
         return this;
     }
     

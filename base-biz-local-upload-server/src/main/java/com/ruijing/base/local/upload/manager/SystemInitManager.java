@@ -21,7 +21,6 @@ public class SystemInitManager implements CommandLineRunner {
     @Resource
     private SystemConfig systemConfig;
     
-    
     @Override
     public void run(String... args) throws Exception {
         // 初始化目录

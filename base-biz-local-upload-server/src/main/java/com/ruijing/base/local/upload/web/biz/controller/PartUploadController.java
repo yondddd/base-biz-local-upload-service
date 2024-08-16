@@ -1,12 +1,12 @@
-package com.ruijing.base.local.upload.web.business.controller;
+package com.ruijing.base.local.upload.web.biz.controller;
 
 import com.ruijing.base.biz.api.server.api.rpc.annotation.RpcMethodParam;
-import com.ruijing.base.local.upload.web.business.req.InitMultipartUploadRequest;
-import com.ruijing.base.local.upload.web.business.req.UploadIdRequest;
-import com.ruijing.base.local.upload.web.business.resp.CompleteMultipartUploadResp;
-import com.ruijing.base.local.upload.web.business.resp.InitMultipartUploadResp;
-import com.ruijing.base.local.upload.web.business.resp.UploadPartResp;
-import com.ruijing.base.local.upload.web.business.util.LinkAssertUtil;
+import com.ruijing.base.local.upload.web.biz.req.InitMultipartUploadRequest;
+import com.ruijing.base.local.upload.web.biz.req.UploadIdRequest;
+import com.ruijing.base.local.upload.web.biz.resp.CompleteMultipartUploadResp;
+import com.ruijing.base.local.upload.web.biz.resp.InitMultipartUploadResp;
+import com.ruijing.base.local.upload.web.biz.resp.UploadPartResp;
+import com.ruijing.base.local.upload.web.biz.util.LinkAssertUtil;
 import com.ruijing.base.swagger.api.rpc.annotation.RpcApi;
 import com.ruijing.base.swagger.api.rpc.annotation.RpcMethod;
 import com.ruijing.fundamental.api.remote.RemoteResponse;

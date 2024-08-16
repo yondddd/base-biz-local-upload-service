@@ -1,6 +1,6 @@
 package com.ruijing.base.local.upload.web.s3.server.service;
 
-import com.ruijing.base.local.upload.web.s3.server.req.PutObjectReq;
+import com.ruijing.base.local.upload.web.s3.server.req.ObjectPutReq;
 
 /**
  * @Description: object service
@@ -9,6 +9,6 @@ import com.ruijing.base.local.upload.web.s3.server.req.PutObjectReq;
  */
 public interface ObjectService {
     
-    String putObject(PutObjectReq req);
+    String putObject(ObjectPutReq req);
     
 }

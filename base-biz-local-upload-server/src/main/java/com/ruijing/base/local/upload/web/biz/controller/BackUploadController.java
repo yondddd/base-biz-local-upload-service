@@ -1,12 +1,11 @@
-package com.ruijing.base.local.upload.web.business.controller;
+package com.ruijing.base.local.upload.web.biz.controller;
 
-import com.ruijing.base.local.upload.web.business.enums.FileTypeEnum;
-import com.ruijing.base.local.upload.web.business.resp.FileUploadResp;
+import com.ruijing.base.local.upload.web.biz.enums.FileTypeEnum;
+import com.ruijing.base.local.upload.web.biz.resp.FileUploadResp;
 import com.ruijing.pearl.annotation.PearlValue;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,8 +19,8 @@ public class BackUploadController {
     
     @PearlValue(key = "upload.file.max.size", defaultValue = "104857600")
     private static Integer MAX_DATA_LENGTH;
-    @Value("${ossClient.download.prefix}")
-    private String downloadPrefix;
+//    @Value("${ossClient.download.prefix}")
+//    private String downloadPrefix;
     
     
     @RequestMapping("/upload")

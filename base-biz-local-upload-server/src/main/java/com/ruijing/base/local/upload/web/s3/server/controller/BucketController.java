@@ -2,7 +2,8 @@ package com.ruijing.base.local.upload.web.s3.server.controller;
 
 import com.ruijing.base.local.upload.util.s3.S3Util;
 import com.ruijing.base.local.upload.web.s3.server.options.PutBucketOptions;
-import com.ruijing.base.local.upload.web.s3.server.req.PutBucketReq;
+import com.ruijing.base.local.upload.web.s3.server.req.BucketDelReq;
+import com.ruijing.base.local.upload.web.s3.server.req.BucketPutReq;
 import com.ruijing.base.local.upload.web.s3.server.service.BucketService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,18 +32,19 @@ public class BucketController {
     public @ResponseBody ResponseEntity<String> putBucket(HttpServletRequest httpServerRequest, @PathVariable("bucket") String bucket) throws Exception {
         LOGGER.info("putBucket:{}", bucket);
         // todo action鉴权、iam鉴权
-        PutBucketReq putBucketReq = PutBucketReq.custom()
+        BucketPutReq putBucketReq = BucketPutReq.custom()
                 .setBucketName(S3Util.urlDecode(bucket))
                 .setOptions(PutBucketOptions.extractOptions(httpServerRequest));
         bucketService.putBucket(putBucketReq);
         return ResponseEntity.ok().build();
     }
     
-    
     @DeleteMapping(value = "/s3/{bucket}")
     public ResponseEntity<String> delBucket(HttpServletRequest httpServerRequest, @PathVariable("bucket") String bucket) throws Exception {
-        LOGGER.info("del" + bucket);
-//        bucketService.putBucket(S3Util.urlDecode(bucket), PutBucketOptions.extractOptions(httpServerRequest));
+        LOGGER.info("delBucket:{}", bucket);
+        BucketDelReq delBucketReq = BucketDelReq.custom()
+                .setBucketName(S3Util.urlDecode(bucket));
+        bucketService.deleteBucket(delBucketReq);
         return ResponseEntity.ok().build();
     }
     

@@ -1,9 +1,9 @@
-package com.ruijing.base.local.upload.web.business.controller;
+package com.ruijing.base.local.upload.web.biz.controller;
 
-import com.ruijing.base.local.upload.web.business.enums.FileTypeEnum;
-import com.ruijing.base.local.upload.web.business.req.FrontRecycleReq;
-import com.ruijing.base.local.upload.web.business.resp.FileUploadResp;
-import com.ruijing.base.local.upload.web.business.resp.RecycleResp;
+import com.ruijing.base.local.upload.web.biz.enums.FileTypeEnum;
+import com.ruijing.base.local.upload.web.biz.req.FrontRecycleReq;
+import com.ruijing.base.local.upload.web.biz.resp.FileUploadResp;
+import com.ruijing.base.local.upload.web.biz.resp.RecycleResp;
 import com.ruijing.fundamental.api.annotation.MethodParam;
 import com.ruijing.fundamental.api.remote.RemoteResponse;
 import org.springframework.web.bind.annotation.*;

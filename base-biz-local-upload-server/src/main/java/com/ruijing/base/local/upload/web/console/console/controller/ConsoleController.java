@@ -14,13 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.s3.model.CompletedPart;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
-import software.amazon.awssdk.services.s3.model.DeleteBucketRequest;
-import software.amazon.awssdk.services.s3.model.S3Object;
+import software.amazon.awssdk.services.s3.model.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,12 +26,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/console")
 @ConditionalOnProperty(name = "system.console", havingValue = "true", matchIfMissing = false)
-public class AdminController {
+public class ConsoleController {
     
     @Autowired
     private S3ClientUtil s3ClientUtil;
-    @Resource
-    private BaseS3Client baseS3Client;
     
     @PostMapping("/putBucket")
     @ResponseBody
@@ -42,10 +37,9 @@ public class AdminController {
         CreateBucketRequest request = CreateBucketRequest.builder()
                 .bucket(req.getBucketName())
                 .build();
-        baseS3Client.putBucket(request);
+        BaseS3Client.putBucket(request);
         return RemoteResponse.success();
     }
-    
     
     @PostMapping("/delBucket")
     @ResponseBody
@@ -53,10 +47,24 @@ public class AdminController {
         DeleteBucketRequest request = DeleteBucketRequest.builder()
                 .bucket(req.getBucketName())
                 .build();
-        baseS3Client.delBucket(request);
+        BaseS3Client.delBucket(request);
         return RemoteResponse.success();
     }
     
+    @PostMapping("/putObject")
+    @ResponseBody
+    public RemoteResponse<String> putObject(HttpServletRequest request,
+                                            @RequestParam("bucketName") String bucketName,
+                                            @RequestParam("file") MultipartFile file) throws IOException {
+        // 随机key、固定ket
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(file.getOriginalFilename())
+                .build();
+        software.amazon.awssdk.core.sync.RequestBody requestBody = software.amazon.awssdk.core.sync.RequestBody.fromInputStream(file.getInputStream(), file.getSize());
+        PutObjectResponse putObjectResponse = BaseS3Client.putObject(putObjectRequest, requestBody);
+        return RemoteResponse.success(putObjectResponse.toString());
+    }
     
     @PostMapping("/listBucket")
     @ResponseBody

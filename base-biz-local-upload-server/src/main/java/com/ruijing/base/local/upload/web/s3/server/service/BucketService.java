@@ -1,6 +1,7 @@
 package com.ruijing.base.local.upload.web.s3.server.service;
 
-import com.ruijing.base.local.upload.web.s3.server.req.PutBucketReq;
+import com.ruijing.base.local.upload.web.s3.server.req.BucketDelReq;
+import com.ruijing.base.local.upload.web.s3.server.req.BucketPutReq;
 
 /**
  * @author yond
@@ -8,7 +9,8 @@ import com.ruijing.base.local.upload.web.s3.server.req.PutBucketReq;
  * @description bucket service
  */
 public interface BucketService {
-
-    void putBucket(PutBucketReq req);
-
+    
+    void putBucket(BucketPutReq req);
+    
+    void deleteBucket(BucketDelReq req);
 }

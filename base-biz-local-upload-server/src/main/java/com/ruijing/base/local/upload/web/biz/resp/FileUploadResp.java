@@ -1,4 +1,4 @@
-package com.ruijing.base.local.upload.web.business.resp;
+package com.ruijing.base.local.upload.web.biz.resp;
 
 public class FileUploadResp {
     //0000为成功
