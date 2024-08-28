@@ -65,4 +65,17 @@ public class ApiResponseUtil {
     }
     
     // write http
+    public static <T> String xmlResponse(T o) {
+        try {
+            JAXBContext context = JAXBContext.newInstance(o.getClass());
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            StringWriter writer = new StringWriter();
+            marshaller.marshal(o, writer);
+            return writer.toString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
 }

@@ -1,7 +1,6 @@
 package com.ruijing.base.local.upload.web.s3.client;
 
 import com.ruijing.base.local.upload.util.CommonUtil;
-import com.ruijing.fundamental.api.annotation.Model;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -17,7 +16,6 @@ import java.net.URI;
  * @Author: WangJieLong
  * @Date: 2024-07-01
  */
-@Model("s3 client")
 public class BaseS3Client {
     
     private static final BaseS3Client singleton = new BaseS3Client();
@@ -42,13 +40,20 @@ public class BaseS3Client {
         return S3_CLIENT.deleteBucket(request);
     }
     
+    public static ListBucketsResponse listBuckets() {
+        return S3_CLIENT.listBuckets();
+    }
+    
+    
     public static PutObjectResponse putObject(PutObjectRequest putObjectRequest, RequestBody requestBody) {
         return S3_CLIENT.putObject(putObjectRequest, requestBody);
     }
     
-    public DeleteObjectsResponse delObject(DeleteObjectsRequest request) {
+    public static DeleteObjectsResponse delObjects(DeleteObjectsRequest request) {
         return S3_CLIENT.deleteObjects(request);
     }
     
-    
+    public static DeleteObjectResponse delObject(DeleteObjectRequest request) {
+        return S3_CLIENT.deleteObject(request);
+    }
 }

@@ -4,9 +4,12 @@ import com.ruijing.base.local.upload.util.s3.S3Util;
 import com.ruijing.base.local.upload.web.s3.server.options.PutBucketOptions;
 import com.ruijing.base.local.upload.web.s3.server.req.BucketDelReq;
 import com.ruijing.base.local.upload.web.s3.server.req.BucketPutReq;
+import com.ruijing.base.local.upload.web.s3.server.resp.ListAllMyBucketsResult;
+import com.ruijing.base.local.upload.web.s3.server.response.ApiResponseUtil;
 import com.ruijing.base.local.upload.web.s3.server.service.BucketService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,5 +51,10 @@ public class BucketController {
         return ResponseEntity.ok().build();
     }
     
+    @GetMapping("/s3/")
+    public @ResponseBody ResponseEntity<String> listBuckets() {
+        ListAllMyBucketsResult data = bucketService.listBuckets();
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(ApiResponseUtil.xmlResponse(data));
+    }
     
 }

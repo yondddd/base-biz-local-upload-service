@@ -15,4 +15,7 @@ public class BucketConstant {
      */
     public static final String BaseMetaBucket = ".baseio.sys";
     
+    public static final String TEP_PATH = "/.baseio.sys/tem";
+    
+    
 }

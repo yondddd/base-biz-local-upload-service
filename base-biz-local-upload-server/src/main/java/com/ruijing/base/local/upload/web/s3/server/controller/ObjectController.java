@@ -3,8 +3,10 @@ package com.ruijing.base.local.upload.web.s3.server.controller;
 import com.ruijing.base.local.upload.config.SystemConfig;
 import com.ruijing.base.local.upload.enums.ApiErrorEnum;
 import com.ruijing.base.local.upload.web.s3.server.req.ObjectPutReq;
+import com.ruijing.base.local.upload.web.s3.server.resp.InitiateMultipartUploadResult;
 import com.ruijing.base.local.upload.web.s3.server.response.ApiResponseUtil;
 import com.ruijing.base.local.upload.web.s3.server.service.ObjectService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
@@ -49,6 +51,7 @@ public class ObjectController {
         return ResponseEntity.ok(url);
     }
     
+    
     // todo 考虑下别人怎么实现 域名绑定桶
     // 非阻塞
     @GetMapping("/{dynamicPath}/**")
@@ -72,5 +75,36 @@ public class ObjectController {
         }
     }
     
+    @DeleteMapping("/s3/{dynamicPath}/**")
+    public void deleteObject(HttpServletRequest httpServerRequest,
+                             HttpServletResponse httpServerResponse) {
+        // 去掉s3
+        String fullPath = (String) httpServerRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+        fullPath = fullPath.replaceAll("/s3/", "");
+        String key = "/" + systemConfig.getDataPath() + "/" + fullPath;
+        Path path = Paths.get(key);
+        
+        if (!Files.exists(path)) {
+            ApiResponseUtil.writeError(ApiErrorEnum.ErrNoSuchKey);
+            return;
+        }
+        try {
+            Files.delete(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    // 分片上传
+    @PostMapping(value = "/s3/{objectName}/**", params = "uploads")
+    public @ResponseBody ResponseEntity<String> createMultipartUpload(HttpServletRequest httpServerRequest) {
+        // tem
+        String fullPath = (String) httpServerRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+        fullPath = fullPath.replaceAll("/s3/", "");
+        String key = "/" + systemConfig.getDataPath() + "/" + fullPath;
+        objectService.createMultipartUpload();
+        InitiateMultipartUploadResult data = bucketService.listBuckets();
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(ApiResponseUtil.xmlResponse(data));
+    }
     
 }
