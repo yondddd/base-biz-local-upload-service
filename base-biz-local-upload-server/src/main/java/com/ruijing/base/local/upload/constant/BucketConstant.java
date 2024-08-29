@@ -14,8 +14,14 @@ public class BucketConstant {
      * 配置文件初始bucket
      */
     public static final String BaseMetaBucket = ".baseio.sys";
-    
-    public static final String TEP_PATH = "/.baseio.sys/tem";
+    /**
+     * 默认bucket
+     */
+    public static final String DEFAULT_BUCKET = "data";
+    /**
+     *
+     */
+    public static final String TEM_PATH = "/.baseio.sys/tem";
     
     
 }

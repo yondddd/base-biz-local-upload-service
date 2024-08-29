@@ -3,10 +3,8 @@ package com.ruijing.base.local.upload.web.s3.server.controller;
 import com.ruijing.base.local.upload.config.SystemConfig;
 import com.ruijing.base.local.upload.enums.ApiErrorEnum;
 import com.ruijing.base.local.upload.web.s3.server.req.ObjectPutReq;
-import com.ruijing.base.local.upload.web.s3.server.resp.InitiateMultipartUploadResult;
 import com.ruijing.base.local.upload.web.s3.server.response.ApiResponseUtil;
 import com.ruijing.base.local.upload.web.s3.server.service.ObjectService;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
@@ -32,12 +30,9 @@ public class ObjectController {
     
     @Resource
     private SystemConfig systemConfig;
+    @Resource
+    private ObjectService objectService;
     
-    private final ObjectService objectService;
-    
-    public ObjectController(ObjectService objectService) {
-        this.objectService = objectService;
-    }
     
     @PutMapping(value = "/s3/{bucket}/{objectName}")
     public @ResponseBody ResponseEntity<String> putObject(HttpServletRequest httpServerRequest,
@@ -57,6 +52,8 @@ public class ObjectController {
     @GetMapping("/{dynamicPath}/**")
     public void getObject(HttpServletRequest httpServerRequest,
                           HttpServletResponse httpServerResponse) {
+        
+        httpServerRequest.getContextPath();
         String fullPath = (String) httpServerRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         String key = "/" + systemConfig.getDataPath() + "/" + fullPath;
         Path path = Paths.get(key);
@@ -102,9 +99,10 @@ public class ObjectController {
         String fullPath = (String) httpServerRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         fullPath = fullPath.replaceAll("/s3/", "");
         String key = "/" + systemConfig.getDataPath() + "/" + fullPath;
-        objectService.createMultipartUpload();
-        InitiateMultipartUploadResult data = bucketService.listBuckets();
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(ApiResponseUtil.xmlResponse(data));
+//        objectService.createMultipartUpload();
+//        InitiateMultipartUploadResult data = bucketService.listBuckets();
+//        return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(ApiResponseUtil.xmlResponse(data));
+        return null;
     }
     
 }

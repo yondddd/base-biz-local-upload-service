@@ -7,6 +7,7 @@ import com.ruijing.base.local.upload.web.console.console.req.BucketDelReq;
 import com.ruijing.base.local.upload.web.console.console.req.ObjectDelReq;
 import com.ruijing.base.local.upload.web.console.console.req.ObjectsDelReq;
 import com.ruijing.base.local.upload.web.console.console.resp.BucketVO;
+import com.ruijing.base.local.upload.web.console.console.resp.CreateMultipartUploadResp;
 import com.ruijing.base.local.upload.web.s3.client.BaseS3Client;
 import com.ruijing.fundamental.api.remote.RemoteResponse;
 import org.apache.commons.io.FilenameUtils;
@@ -31,7 +32,7 @@ public class ConsoleController {
         CreateBucketRequest request = CreateBucketRequest.builder()
                 .bucket(req.getBucketName())
                 .build();
-        BaseS3Client.putBucket(request);
+        BaseS3Client.getInstance().createBucket(request);
         return RemoteResponse.success();
     }
     
@@ -41,7 +42,7 @@ public class ConsoleController {
         DeleteBucketRequest request = DeleteBucketRequest.builder()
                 .bucket(req.getBucketName())
                 .build();
-        BaseS3Client.delBucket(request);
+        BaseS3Client.getInstance().deleteBucket(request);
         return RemoteResponse.success();
     }
     
@@ -52,16 +53,15 @@ public class ConsoleController {
                                             @RequestParam("file") MultipartFile file) throws IOException {
         
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-        String objectName = UUIDUtil.generateId() + "." + extension;
+        String objectName = PathUtils.concatFileName(UUIDUtil.generateId(), extension);
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(objectName)
                 .build();
         software.amazon.awssdk.core.sync.RequestBody requestBody = software.amazon.awssdk.core.sync.RequestBody.fromInputStream(file.getInputStream(), file.getSize());
-        BaseS3Client.putObject(putObjectRequest, requestBody);
+        BaseS3Client.getInstance().putObject(putObjectRequest, requestBody);
         return RemoteResponse.success(PathUtils.buildPath(bucketName, objectName));
     }
-    
     
     @PostMapping("/deleteObjects")
     @ResponseBody
@@ -72,7 +72,7 @@ public class ConsoleController {
         DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder()
                 .bucket(req.getBucket())
                 .delete(Delete.builder().objects(collect).build()).build();
-        BaseS3Client.delObjects(deleteObjectsRequest);
+        BaseS3Client.getInstance().deleteObjects(deleteObjectsRequest);
         return RemoteResponse.success();
     }
     
@@ -82,15 +82,14 @@ public class ConsoleController {
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                 .bucket(req.getBucket())
                 .key(req.getKey()).build();
-        BaseS3Client.delObject(deleteObjectRequest);
+        BaseS3Client.getInstance().deleteObject(deleteObjectRequest);
         return RemoteResponse.success();
     }
-    
     
     @PostMapping("/listBucket")
     @ResponseBody
     public RemoteResponse<List<BucketVO>> listBucket() {
-        ListBucketsResponse listBucketsResponse = BaseS3Client.listBuckets();
+        ListBucketsResponse listBucketsResponse = BaseS3Client.getInstance().listBuckets();
         List<software.amazon.awssdk.services.s3.model.Bucket> buckets = listBucketsResponse.buckets();
         List<BucketVO> data = new ArrayList<>();
         for (Bucket bucket : buckets) {
@@ -104,5 +103,12 @@ public class ConsoleController {
     
     // listObjects、partUpload
     
+    @PostMapping("/createMultipartUpload")
+    @ResponseBody
+    public RemoteResponse<CreateMultipartUploadResp> createMultipartUpload() {
+        CreateMultipartUploadRequest.builder()
+                        .bucket().key()
+        BaseS3Client.getInstance().createMultipartUpload()
+    }
     
 }

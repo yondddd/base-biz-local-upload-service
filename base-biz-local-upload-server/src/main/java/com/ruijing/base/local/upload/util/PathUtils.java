@@ -33,4 +33,9 @@ public class PathUtils {
         return String.join("/", items);
     }
     
+    
+    public static String concatFileName(String prefix, String extension) {
+        return prefix + "." + extension;
+    }
+    
 }

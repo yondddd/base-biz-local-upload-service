@@ -1,15 +1,23 @@
 package com.ruijing.base.local.upload.web.biz.controller;
 
+import com.ruijing.base.local.upload.util.PathUtils;
+import com.ruijing.base.local.upload.util.UUIDUtil;
 import com.ruijing.base.local.upload.web.biz.enums.FileTypeEnum;
 import com.ruijing.base.local.upload.web.biz.req.FrontRecycleReq;
 import com.ruijing.base.local.upload.web.biz.resp.FileUploadResp;
 import com.ruijing.base.local.upload.web.biz.resp.RecycleResp;
+import com.ruijing.base.local.upload.web.s3.client.BaseS3Client;
 import com.ruijing.fundamental.api.annotation.MethodParam;
 import com.ruijing.fundamental.api.remote.RemoteResponse;
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 /**
  * @Description: front upload
@@ -18,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RestController
 public class FrontUploadController {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(FrontUploadController.class);
     
     @RequestMapping("/front")
     public @ResponseBody
@@ -33,13 +43,27 @@ public class FrontUploadController {
                                     @RequestParam(value = "convertFormat", defaultValue = "", required = false) @MethodParam(value = "svg 图片转换格式") String format,
                                     @RequestParam(value = "dpi", defaultValue = "0", required = false) @MethodParam(value = "svg 图片转换dpi") int dpi) {
         
+        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+        String objectName = PathUtils.concatFileName(UUIDUtil.generateId(), extension);
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket("6666")
+                .key(objectName)
+                .build();
+        software.amazon.awssdk.core.sync.RequestBody requestBody = null;
+        try {
+            requestBody = software.amazon.awssdk.core.sync.RequestBody.fromInputStream(file.getInputStream(), file.getSize());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        BaseS3Client.getInstance().putObject(putObjectRequest, requestBody);
+        // 抽一层
         return FileUploadResp.failed("没实现呢");
     }
-    
     
     @RequestMapping("/front/recycle")
     public @ResponseBody
     RemoteResponse<RecycleResp> recycle(HttpServletRequest request, @RequestBody FrontRecycleReq param) {
+        // todo 暂时没必要删。第二期
         return RemoteResponse.<RecycleResp>custom().setFailure("没实现呢");
     }
     
