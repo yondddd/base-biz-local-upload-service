@@ -16,20 +16,21 @@ public class BucketCreateReq implements Serializable {
     private static final long serialVersionUID = -7340146014021874696L;
     
     @ModelProperty("bucket name")
-    private String bucketName;
+    private String bucket;
     
-    public String getBucketName() {
-        return bucketName;
+    public String getBucket() {
+        return bucket;
     }
     
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
+    public void setBucket(String bucket) {
+        this.bucket = bucket;
     }
     
     @Override
     public String toString() {
         return "BucketCreateReq{" +
-                "bucketName='" + bucketName + '\'' +
+                "bucket='" + bucket + '\'' +
                 '}';
     }
+    
 }

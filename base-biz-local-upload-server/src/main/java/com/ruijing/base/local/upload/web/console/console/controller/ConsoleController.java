@@ -1,26 +1,21 @@
 package com.ruijing.base.local.upload.web.console.console.controller;
 
-import com.ruijing.base.local.upload.util.PathUtils;
-import com.ruijing.base.local.upload.util.UUIDUtil;
 import com.ruijing.base.local.upload.web.console.console.req.BucketCreateReq;
 import com.ruijing.base.local.upload.web.console.console.req.BucketDelReq;
 import com.ruijing.base.local.upload.web.console.console.req.ObjectDelReq;
 import com.ruijing.base.local.upload.web.console.console.req.ObjectsDelReq;
 import com.ruijing.base.local.upload.web.console.console.resp.BucketVO;
-import com.ruijing.base.local.upload.web.console.console.resp.CreateMultipartUploadResp;
 import com.ruijing.base.local.upload.web.s3.client.BaseS3Client;
 import com.ruijing.fundamental.api.remote.RemoteResponse;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.model.Bucket;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/console")
@@ -29,68 +24,49 @@ public class ConsoleController {
     @PostMapping("/putBucket")
     @ResponseBody
     public RemoteResponse<Boolean> putBucket(@RequestBody BucketCreateReq req) {
-        CreateBucketRequest request = CreateBucketRequest.builder()
-                .bucket(req.getBucketName())
-                .build();
-        BaseS3Client.getInstance().createBucket(request);
+        
+        BaseS3Client.createBucket(req.getBucket());
         return RemoteResponse.success();
     }
     
     @PostMapping("/delBucket")
     @ResponseBody
     public RemoteResponse<Boolean> delBucket(@RequestBody BucketDelReq req) {
-        DeleteBucketRequest request = DeleteBucketRequest.builder()
-                .bucket(req.getBucketName())
-                .build();
-        BaseS3Client.getInstance().deleteBucket(request);
+        
+        BaseS3Client.delBucket(req.getBucket());
         return RemoteResponse.success();
     }
     
     @PostMapping("/putObject")
     @ResponseBody
     public RemoteResponse<String> putObject(HttpServletRequest request,
-                                            @RequestParam("bucketName") String bucketName,
+                                            @RequestParam("bucket") String bucket,
                                             @RequestParam("file") MultipartFile file) throws IOException {
         
-        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-        String objectName = PathUtils.concatFileName(UUIDUtil.generateId(), extension);
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(objectName)
-                .build();
-        software.amazon.awssdk.core.sync.RequestBody requestBody = software.amazon.awssdk.core.sync.RequestBody.fromInputStream(file.getInputStream(), file.getSize());
-        BaseS3Client.getInstance().putObject(putObjectRequest, requestBody);
-        return RemoteResponse.success(PathUtils.buildPath(bucketName, objectName));
+        String url = BaseS3Client.putObject(bucket, file.getOriginalFilename(), file.getInputStream(), file.getSize());
+        return RemoteResponse.success(url);
     }
     
     @PostMapping("/deleteObjects")
     @ResponseBody
     public RemoteResponse<Boolean> deleteObjects(@RequestBody ObjectsDelReq req) {
         
-        List<ObjectIdentifier> collect = req.getKeys().stream()
-                .map(x -> ObjectIdentifier.builder().key(x).build()).collect(Collectors.toList());
-        DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder()
-                .bucket(req.getBucket())
-                .delete(Delete.builder().objects(collect).build()).build();
-        BaseS3Client.getInstance().deleteObjects(deleteObjectsRequest);
+        BaseS3Client.deleteObjects(req.getBucket(), req.getKeys());
         return RemoteResponse.success();
     }
     
     @PostMapping("/deleteObject")
     @ResponseBody
     public RemoteResponse<Boolean> deleteObject(@RequestBody ObjectDelReq req) {
-        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                .bucket(req.getBucket())
-                .key(req.getKey()).build();
-        BaseS3Client.getInstance().deleteObject(deleteObjectRequest);
+        
+        BaseS3Client.deleteObject(req.getBucket(), req.getKey());
         return RemoteResponse.success();
     }
     
     @PostMapping("/listBucket")
     @ResponseBody
     public RemoteResponse<List<BucketVO>> listBucket() {
-        ListBucketsResponse listBucketsResponse = BaseS3Client.getInstance().listBuckets();
-        List<software.amazon.awssdk.services.s3.model.Bucket> buckets = listBucketsResponse.buckets();
+        List<Bucket> buckets = BaseS3Client.listBuckets();
         List<BucketVO> data = new ArrayList<>();
         for (Bucket bucket : buckets) {
             BucketVO item = new BucketVO();
@@ -99,16 +75,6 @@ public class ConsoleController {
             data.add(item);
         }
         return RemoteResponse.success(data);
-    }
-    
-    // listObjects、partUpload
-    
-    @PostMapping("/createMultipartUpload")
-    @ResponseBody
-    public RemoteResponse<CreateMultipartUploadResp> createMultipartUpload() {
-        CreateMultipartUploadRequest.builder()
-                        .bucket().key()
-        BaseS3Client.getInstance().createMultipartUpload()
     }
     
 }

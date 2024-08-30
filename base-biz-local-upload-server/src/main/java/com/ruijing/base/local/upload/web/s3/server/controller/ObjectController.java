@@ -47,7 +47,7 @@ public class ObjectController {
     }
     
     
-    // todo 考虑下别人怎么实现 域名绑定桶
+    // todo 应该由域名映射bucket 去加上目录查
     // 非阻塞
     @GetMapping("/{dynamicPath}/**")
     public void getObject(HttpServletRequest httpServerRequest,

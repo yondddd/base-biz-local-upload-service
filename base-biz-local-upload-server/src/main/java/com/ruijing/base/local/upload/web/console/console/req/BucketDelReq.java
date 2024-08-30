@@ -17,20 +17,21 @@ public class BucketDelReq implements Serializable {
     
     
     @ModelProperty("bucket name")
-    private String bucketName;
+    private String bucket;
     
-    public String getBucketName() {
-        return bucketName;
+    public String getBucket() {
+        return bucket;
     }
     
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
+    public void setBucket(String bucket) {
+        this.bucket = bucket;
     }
     
     @Override
     public String toString() {
         return "BucketDelReq{" +
-                "bucketName='" + bucketName + '\'' +
+                "bucket='" + bucket + '\'' +
                 '}';
     }
+    
 }
