@@ -23,6 +23,12 @@ public class FileUploadResp {
         return resp;
     }
     
+    public static FileUploadResp success(String url) {
+        FileUploadResp resp = new FileUploadResp();
+        resp.setAbsolutePath(url);
+        return resp;
+    }
+    
     public String getCode() {
         return code;
     }
