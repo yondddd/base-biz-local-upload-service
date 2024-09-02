@@ -94,10 +94,15 @@ public class BaseS3Client {
         return listBucketsResponse.buckets();
     }
     
-    public static String createMultipartUpload(String bucket, String key) {
+    public static String createMultipartUpload(String bucket, String fileName) {
+        
+        String extension = FilenameUtils.getExtension(fileName);
+        String key = PathUtils.concatFileName(UUIDUtil.generateId(), extension);
+        
         CreateMultipartUploadRequest request = CreateMultipartUploadRequest.builder()
                 .bucket(bucket)
-                .key(key).build();
+                .key(key)
+                .build();
         CreateMultipartUploadResponse multipartUpload = S3_CLIENT.createMultipartUpload(request);
         return multipartUpload.uploadId();
     }

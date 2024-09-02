@@ -1,12 +1,14 @@
 package com.ruijing.base.local.upload.web.biz.controller;
 
 import com.ruijing.base.biz.api.server.api.rpc.annotation.RpcMethodParam;
+import com.ruijing.base.local.upload.constant.BucketConstant;
 import com.ruijing.base.local.upload.web.biz.req.InitMultipartUploadRequest;
 import com.ruijing.base.local.upload.web.biz.req.UploadIdRequest;
 import com.ruijing.base.local.upload.web.biz.resp.CompleteMultipartUploadResp;
 import com.ruijing.base.local.upload.web.biz.resp.InitMultipartUploadResp;
 import com.ruijing.base.local.upload.web.biz.resp.UploadPartResp;
 import com.ruijing.base.local.upload.web.biz.util.LinkAssertUtil;
+import com.ruijing.base.local.upload.web.s3.client.BaseS3Client;
 import com.ruijing.base.swagger.api.rpc.annotation.RpcApi;
 import com.ruijing.base.swagger.api.rpc.annotation.RpcMethod;
 import com.ruijing.fundamental.api.remote.RemoteResponse;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 /**
  * @Description: 分片上传接口
@@ -51,9 +54,11 @@ public class PartUploadController {
         if (StringUtils.isNotBlank(errorMsg)) {
             return RemoteResponse.<InitMultipartUploadResp>custom().setFailure(errorMsg);
         }
-        return RemoteResponse.<InitMultipartUploadResp>custom().setFailure("没实现呢");
+        String uploadId = BaseS3Client.createMultipartUpload(BucketConstant.DEFAULT_BUCKET, request.getFileName());
+        InitMultipartUploadResp data = new InitMultipartUploadResp();
+        data.setUploadId(uploadId);
+        return RemoteResponse.success(data);
     }
-    
     
     @RpcMethod("上传文件分片(请按顺序上传)")
     @PostMapping("/uploadPart")
@@ -69,9 +74,15 @@ public class PartUploadController {
         if (StringUtils.isNotBlank(errorMsg)) {
             return RemoteResponse.<UploadPartResp>custom().failure(errorMsg);
         }
-        return RemoteResponse.<UploadPartResp>custom().setFailure("没实现呢");
+        try {
+            String eTag = BaseS3Client.uploadPart(uploadId, BucketConstant.DEFAULT_BUCKET, null, partNum, partFile.getInputStream(), partFile.getSize());
+            UploadPartResp data = new UploadPartResp();
+            data.setETag(eTag);
+            return RemoteResponse.success(data);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
-    
     
     @RpcMethod("分片合并")
     @PostMapping("/completeMultipartUpload")
@@ -81,9 +92,11 @@ public class PartUploadController {
         if (StringUtils.isNotBlank(errorMsg)) {
             return RemoteResponse.<CompleteMultipartUploadResp>custom().failure(errorMsg);
         }
-        return RemoteResponse.<CompleteMultipartUploadResp>custom().setFailure("没实现呢");
+        String url = BaseS3Client.completeMultipartUpload(request.getUploadId(), BucketConstant.DEFAULT_BUCKET, null, null);
+        CompleteMultipartUploadResp resp = new CompleteMultipartUploadResp();
+        resp.setUrl(url);
+        return RemoteResponse.success(resp);
     }
-    
     
     @RpcMethod("取消分片上传")
     @PostMapping("/abortMultipartUpload")
@@ -93,7 +106,8 @@ public class PartUploadController {
         if (StringUtils.isNotBlank(errorMsg)) {
             return RemoteResponse.<Boolean>custom().failure(errorMsg);
         }
-        return RemoteResponse.<Boolean>custom().setFailure("没实现呢");
+        BaseS3Client.abortMultipartUpload(request.getUploadId(), BucketConstant.DEFAULT_BUCKET, null);
+        return RemoteResponse.success();
     }
     
 }

@@ -1,5 +1,6 @@
 package com.ruijing.base.local.upload.web.s3.server.controller;
 
+import com.ruijing.base.local.upload.config.BucketDomain;
 import com.ruijing.base.local.upload.config.SystemConfig;
 import com.ruijing.base.local.upload.enums.ApiErrorEnum;
 import com.ruijing.base.local.upload.web.s3.server.req.ObjectPutReq;
@@ -46,23 +47,26 @@ public class ObjectController {
         return ResponseEntity.ok(url);
     }
     
-    
     // todo 应该由域名映射bucket 去加上目录查
     // 非阻塞
-    @GetMapping("/{dynamicPath}/**")
+    @GetMapping("/{dynamic}/**")
     public void getObject(HttpServletRequest httpServerRequest,
                           HttpServletResponse httpServerResponse) {
         
+        String serverName = httpServerRequest.getServerName();
+        String bucket = BucketDomain.getBucket(serverName);
+        if (bucket == null) {
+            ApiResponseUtil.writeError(ApiErrorEnum.ErrNoSuchKey);
+            return;
+        }
         httpServerRequest.getContextPath();
         String fullPath = (String) httpServerRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-        String key = "/" + systemConfig.getDataPath() + "/" + fullPath;
+        String key = "/" + systemConfig.getDataPath() + bucket + fullPath;
         Path path = Paths.get(key);
-        
         if (!Files.exists(path)) {
             ApiResponseUtil.writeError(ApiErrorEnum.ErrNoSuchKey);
             return;
         }
-        
         try (FileChannel fileChannel = FileChannel.open(path, StandardOpenOption.READ)) {
             httpServerResponse.setContentType(Files.probeContentType(path));
             long fileSize = Files.size(path);
@@ -75,7 +79,6 @@ public class ObjectController {
     @DeleteMapping("/s3/{dynamicPath}/**")
     public void deleteObject(HttpServletRequest httpServerRequest,
                              HttpServletResponse httpServerResponse) {
-        // 去掉s3
         String fullPath = (String) httpServerRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         fullPath = fullPath.replaceAll("/s3/", "");
         String key = "/" + systemConfig.getDataPath() + "/" + fullPath;
@@ -91,6 +94,8 @@ public class ObjectController {
             throw new RuntimeException(e);
         }
     }
+    
+    // 多key delete
     
     // 分片上传
     @PostMapping(value = "/s3/{objectName}/**", params = "uploads")

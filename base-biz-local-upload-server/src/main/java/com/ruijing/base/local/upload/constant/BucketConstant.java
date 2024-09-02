@@ -18,10 +18,10 @@ public class BucketConstant {
      * 默认bucket
      */
     public static final String DEFAULT_BUCKET = "data";
-    /**
-     *
-     */
+    
     public static final String TEM_PATH = "/.baseio.sys/tem";
     
+    public static final String MULTIPART_PATH = "/.baseio.sys/multipart";
     
+    public static final String CONFIG_PATH = "/.baseio.sys/config";
 }
