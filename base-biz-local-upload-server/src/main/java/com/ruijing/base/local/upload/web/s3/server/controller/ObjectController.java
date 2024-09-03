@@ -1,11 +1,14 @@
 package com.ruijing.base.local.upload.web.s3.server.controller;
 
 import com.ruijing.base.local.upload.config.BucketDomain;
-import com.ruijing.base.local.upload.config.SystemConfig;
 import com.ruijing.base.local.upload.enums.ApiErrorEnum;
-import com.ruijing.base.local.upload.web.s3.server.req.ObjectPutReq;
+import com.ruijing.base.local.upload.web.s3.server.req.*;
+import com.ruijing.base.local.upload.web.s3.server.resp.CompleteMultipartUploadResult;
+import com.ruijing.base.local.upload.web.s3.server.resp.InitiateMultipartUploadResult;
+import com.ruijing.base.local.upload.web.s3.server.resp.MultiUploadPartResult;
 import com.ruijing.base.local.upload.web.s3.server.response.ApiResponseUtil;
 import com.ruijing.base.local.upload.web.s3.server.service.ObjectService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
@@ -18,7 +21,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 /**
@@ -30,10 +32,7 @@ import java.nio.file.StandardOpenOption;
 public class ObjectController {
     
     @Resource
-    private SystemConfig systemConfig;
-    @Resource
     private ObjectService objectService;
-    
     
     @PutMapping(value = "/s3/{bucket}/{objectName}")
     public @ResponseBody ResponseEntity<String> putObject(HttpServletRequest httpServerRequest,
@@ -47,8 +46,6 @@ public class ObjectController {
         return ResponseEntity.ok(url);
     }
     
-    // todo 应该由域名映射bucket 去加上目录查
-    // 非阻塞
     @GetMapping("/{dynamic}/**")
     public void getObject(HttpServletRequest httpServerRequest,
                           HttpServletResponse httpServerResponse) {
@@ -61,8 +58,8 @@ public class ObjectController {
         }
         httpServerRequest.getContextPath();
         String fullPath = (String) httpServerRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-        String key = "/" + systemConfig.getDataPath() + bucket + fullPath;
-        Path path = Paths.get(key);
+        ObjectGetReq objectGetReq = ObjectGetReq.custom().setBucket(bucket).setKey(fullPath);
+        Path path = objectService.getObject(objectGetReq);
         if (!Files.exists(path)) {
             ApiResponseUtil.writeError(ApiErrorEnum.ErrNoSuchKey);
             return;
@@ -76,38 +73,64 @@ public class ObjectController {
         }
     }
     
-    @DeleteMapping("/s3/{dynamicPath}/**")
-    public void deleteObject(HttpServletRequest httpServerRequest,
+    @DeleteMapping("/s3/{bucket}/**")
+    public void deleteObject(@PathVariable String bucket,
+                             HttpServletRequest httpServerRequest,
                              HttpServletResponse httpServerResponse) {
         String fullPath = (String) httpServerRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-        fullPath = fullPath.replaceAll("/s3/", "");
-        String key = "/" + systemConfig.getDataPath() + "/" + fullPath;
-        Path path = Paths.get(key);
+        String key = fullPath.replaceAll("/s3/" + bucket + "/", "");
+        ObjectDelReq objectDelReq = ObjectDelReq.custom().setBucket(bucket).setKey(key);
+        objectService.delObject(objectDelReq);
+    }
+    
+    @PostMapping(value = "/s3/{bucket}/**", params = "uploads")
+    public @ResponseBody ResponseEntity<String> createMultipartUpload(@PathVariable String bucket,
+                                                                      HttpServletRequest httpServerRequest) {
+        String fullPath = (String) httpServerRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+        String key = fullPath.replaceAll("/s3/" + bucket + "/", "");
+        MultipartUploadInitReq req = MultipartUploadInitReq.custom()
+                .setBucket(bucket)
+                .setKey(key);
+        InitiateMultipartUploadResult data = objectService.createMultipartUpload(req);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(ApiResponseUtil.xmlResponse(data));
+    }
+    
+    @PutMapping(value = "/s3/{bucket}/**")
+    public @ResponseBody ResponseEntity<String> uploadPart(HttpServletRequest httpServerRequest,
+                                                           HttpServletResponse httpServerResponse,
+                                                           @PathVariable String bucket,
+                                                           @RequestParam Integer partNumber, @RequestParam String uploadId) {
         
-        if (!Files.exists(path)) {
-            ApiResponseUtil.writeError(ApiErrorEnum.ErrNoSuchKey);
-            return;
-        }
+        String fullPath = (String) httpServerRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+        String key = fullPath.replaceAll("/s3/" + bucket + "/", "");
         try {
-            Files.delete(path);
+            MultiUploadPartReq req = MultiUploadPartReq.custom()
+                    .setBucket(bucket)
+                    .setKey(key)
+                    .setUploadId(uploadId)
+                    .setPartNum(partNumber)
+                    .setInputStream(httpServerRequest.getInputStream());
+            MultiUploadPartResult result = objectService.uploadPart(req);
+            httpServerResponse.addHeader("ETag", result.geteTag());
+            return ResponseEntity.ok().build();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
     
-    // 多key delete
-    
-    // 分片上传
-    @PostMapping(value = "/s3/{objectName}/**", params = "uploads")
-    public @ResponseBody ResponseEntity<String> createMultipartUpload(HttpServletRequest httpServerRequest) {
-        // tem
+    @PostMapping(value = "/s3/{bucket}/**", params = "uploadId")
+    public ResponseEntity<String> completeMultipartUpload(HttpServletRequest httpServerRequest,
+                                                          @PathVariable String bucket, @RequestParam String uploadId,
+                                                          @RequestBody MultipartUploadCompleteRequest body) {
+        
         String fullPath = (String) httpServerRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-        fullPath = fullPath.replaceAll("/s3/", "");
-        String key = "/" + systemConfig.getDataPath() + "/" + fullPath;
-//        objectService.createMultipartUpload();
-//        InitiateMultipartUploadResult data = bucketService.listBuckets();
-//        return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(ApiResponseUtil.xmlResponse(data));
-        return null;
+        String key = fullPath.replaceAll("/s3/" + bucket + "/", "");
+        MultipartUploadCompleteReq req = MultipartUploadCompleteReq.custom()
+                .setBucket(bucket)
+                .setKey(key)
+                .setUploadId(uploadId)
+                .setParts(body.getParts());
+        CompleteMultipartUploadResult result = objectService.completeMultipartUpload(req);
     }
     
 }
