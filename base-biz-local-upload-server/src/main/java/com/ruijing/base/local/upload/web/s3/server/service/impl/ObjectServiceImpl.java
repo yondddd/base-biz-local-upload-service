@@ -33,15 +33,19 @@ public class ObjectServiceImpl implements ObjectService {
     
     @Override
     public String putObject(ObjectPutReq req) {
-        String bucket = "/" + systemConfig.getDataPath() + req.getBucketName();
+        String bucket = "/" + systemConfig.getDataPath() + req.getBucket();
         // bucket exist
         Path bucketPath = Paths.get(bucket);
         if (!Files.exists(bucketPath)) {
             return "bucket do not exist";
         }
-        String object = bucket + "/" + req.getObjectName();
+        String object = bucket + "/" + req.getKey();
         Path objectPath = Paths.get(object);
         try {
+            Path parentDir = objectPath.getParent();
+            if (parentDir != null) {
+                Files.createDirectories(parentDir);
+            }
             Files.copy(req.getInputStream(), objectPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -83,6 +87,11 @@ public class ObjectServiceImpl implements ObjectService {
     @Override
     public CompleteMultipartUploadResult completeMultipartUpload(MultipartUploadCompleteReq req) {
         return null;
+    }
+    
+    @Override
+    public void abortMultipartUpload(MultipartUploadAbortReq req) {
+    
     }
     
 }

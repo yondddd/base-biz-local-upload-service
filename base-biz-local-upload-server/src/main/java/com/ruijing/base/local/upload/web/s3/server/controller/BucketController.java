@@ -31,8 +31,8 @@ public class BucketController {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(BucketController.class);
     
-    @PutMapping(value = "/s3/{bucket}")
-    public @ResponseBody ResponseEntity<String> putBucket(HttpServletRequest httpServerRequest, @PathVariable("bucket") String bucket) throws Exception {
+    @PutMapping(value = "/s3/{putBucket}")
+    public @ResponseBody ResponseEntity<String> putBucket(HttpServletRequest httpServerRequest, @PathVariable("putBucket") String bucket) throws Exception {
         LOGGER.info("putBucket:{}", bucket);
         // todo action鉴权、iam鉴权
         BucketPutReq putBucketReq = BucketPutReq.custom()
@@ -42,8 +42,8 @@ public class BucketController {
         return ResponseEntity.ok().build();
     }
     
-    @DeleteMapping(value = "/s3/{bucket}")
-    public ResponseEntity<String> delBucket(HttpServletRequest httpServerRequest, @PathVariable("bucket") String bucket) throws Exception {
+    @DeleteMapping(value = "/s3/{delBucket}")
+    public ResponseEntity<String> delBucket(HttpServletRequest httpServerRequest, @PathVariable("delBucket") String bucket) throws Exception {
         LOGGER.info("delBucket:{}", bucket);
         BucketDelReq delBucketReq = BucketDelReq.custom()
                 .setBucketName(S3Util.urlDecode(bucket));

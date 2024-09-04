@@ -52,6 +52,11 @@
             <artifactId>commons-fileupload</artifactId>
             <version>1.5</version>
         </dependency>
+        <dependency>
+            <groupId>com.ruijing.base</groupId>
+            <artifactId>base-biz-gateway-api</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

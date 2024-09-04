@@ -9,29 +9,29 @@ import java.io.InputStream;
  */
 public class ObjectPutReq {
     
-    private String bucketName;
-    private String objectName;
+    private String bucket;
+    private String key;
     private InputStream inputStream;
     
     public static ObjectPutReq custom() {
         return new ObjectPutReq();
     }
     
-    public String getBucketName() {
-        return bucketName;
+    public String getBucket() {
+        return bucket;
     }
     
-    public ObjectPutReq setBucketName(String bucketName) {
-        this.bucketName = bucketName;
+    public ObjectPutReq setBucket(String bucket) {
+        this.bucket = bucket;
         return this;
     }
     
-    public String getObjectName() {
-        return objectName;
+    public String getKey() {
+        return key;
     }
     
-    public ObjectPutReq setObjectName(String objectName) {
-        this.objectName = objectName;
+    public ObjectPutReq setKey(String key) {
+        this.key = key;
         return this;
     }
     
@@ -47,8 +47,8 @@ public class ObjectPutReq {
     @Override
     public String toString() {
         return "PutObjectReq{" +
-                "bucketName='" + bucketName + '\'' +
-                ", objectName='" + objectName + '\'' +
+                "bucketName='" + bucket + '\'' +
+                ", objectName='" + key + '\'' +
                 '}';
     }
 }

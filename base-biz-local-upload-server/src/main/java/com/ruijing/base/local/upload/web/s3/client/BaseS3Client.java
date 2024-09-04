@@ -1,8 +1,10 @@
 package com.ruijing.base.local.upload.web.s3.client;
 
+import com.ruijing.base.local.upload.config.BucketDomain;
 import com.ruijing.base.local.upload.util.CommonUtil;
 import com.ruijing.base.local.upload.util.PathUtils;
 import com.ruijing.base.local.upload.util.UUIDUtil;
+import com.ruijing.base.local.upload.util.s3.ObjectNameUtil;
 import org.apache.commons.io.FilenameUtils;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -63,14 +65,14 @@ public class BaseS3Client {
                                    Long fileSize) {
         
         String extension = FilenameUtils.getExtension(fileName);
-        String objectName = PathUtils.concatFileName(UUIDUtil.generateId(), extension);
+        String key = PathUtils.concatFileName(ObjectNameUtil.getTimeKey(UUIDUtil.generateId()), extension);
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
-                .key(objectName)
+                .key(key)
                 .build();
         RequestBody requestBody = RequestBody.fromInputStream(inputStream, fileSize);
         S3_CLIENT.putObject(putObjectRequest, requestBody);
-        return PathUtils.buildPath(bucket, objectName);
+        return PathUtils.buildPath(BucketDomain.getDomain(bucket), key);
     }
     
     public static void deleteObjects(String bucket, List<String> keys) {
@@ -97,7 +99,7 @@ public class BaseS3Client {
     public static String createMultipartUpload(String bucket, String fileName) {
         
         String extension = FilenameUtils.getExtension(fileName);
-        String key = PathUtils.concatFileName(UUIDUtil.generateId(), extension);
+        String key = PathUtils.concatFileName(ObjectNameUtil.getTimeKey(UUIDUtil.generateId()), extension);
         
         CreateMultipartUploadRequest request = CreateMultipartUploadRequest.builder()
                 .bucket(bucket)
@@ -137,7 +139,7 @@ public class BaseS3Client {
                 .multipartUpload(multipart)
                 .build();
         CompleteMultipartUploadResponse response = S3_CLIENT.completeMultipartUpload(request);
-        return "url";
+        return PathUtils.buildPath(BucketDomain.getDomain(bucket), key);
     }
     
     public static void abortMultipartUpload(String uploadId, String bucket, String key) {

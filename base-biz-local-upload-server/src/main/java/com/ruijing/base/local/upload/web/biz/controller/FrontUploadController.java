@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 /**
  * @Description: front upload
@@ -28,8 +28,8 @@ public class FrontUploadController {
     
     @RequestMapping("/front")
     public @ResponseBody
-    FileUploadResp uploadFileByType(HttpServletRequest request, @RequestParam("id") @MethodParam(value = "文件账号id", required = true) String id,
-                                    @RequestParam("file") @MethodParam(value = "文件", required = true) MultipartFile file,
+    FileUploadResp uploadFileByType(ServletInputStream request, @RequestParam("id") @MethodParam(value = "文件账号id", required = true) String id,
+                                    @RequestParam("file") @MethodParam(value = "文件", required = false) MultipartFile file,
                                     @RequestParam("type") @MethodParam(value = "文件类型", required = true) FileTypeEnum type,
                                     @RequestParam(value = "width", defaultValue = "0", required = false) @MethodParam(value = "图片宽度") int width,
                                     @RequestParam(value = "height", defaultValue = "0", required = false) @MethodParam(value = "图片高度") int height,
@@ -42,9 +42,9 @@ public class FrontUploadController {
         
         
         try {
-            String url = BaseS3Client.putObject(BucketConstant.DEFAULT_BUCKET, file.getOriginalFilename(), file.getInputStream(), file.getSize());
+            String url = BaseS3Client.putObject(BucketConstant.DEFAULT_BUCKET, file.getOriginalFilename(), null, file.getSize());
             return FileUploadResp.success(url);
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error("<|>FrontUploadController_front<|>", e);
             return FileUploadResp.failed("没实现呢");
         }

@@ -26,4 +26,6 @@ public interface ObjectService {
     
     CompleteMultipartUploadResult completeMultipartUpload(MultipartUploadCompleteReq req);
     
+    void abortMultipartUpload(MultipartUploadAbortReq req);
+    
 }

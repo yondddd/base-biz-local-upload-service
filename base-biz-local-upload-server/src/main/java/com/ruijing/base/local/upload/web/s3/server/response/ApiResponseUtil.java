@@ -28,6 +28,11 @@ public class ApiResponseUtil {
     public static void writeError(final ApiErrorEnum errorEnum) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+        writeError(request, response, errorEnum);
+    }
+    
+    public static void writeError(HttpServletRequest request, HttpServletResponse response, final ApiErrorEnum errorEnum) {
+        
         try {
             ErrorResponse errorResponse = new ErrorResponse();
             errorResponse.setRequestId(request.getHeader(S3Headers.AmzRequestID));
@@ -63,6 +68,7 @@ public class ApiResponseUtil {
         }
         
     }
+    
     
     // write http
     public static <T> String xmlResponse(T o) {
