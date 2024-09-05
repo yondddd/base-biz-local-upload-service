@@ -1,11 +1,14 @@
 package com.ruijing.base.local.upload.web.s3.client;
 
 import com.ruijing.base.local.upload.config.BucketDomain;
+import com.ruijing.base.local.upload.constant.HttpHeaders;
 import com.ruijing.base.local.upload.util.CommonUtil;
 import com.ruijing.base.local.upload.util.PathUtils;
 import com.ruijing.base.local.upload.util.UUIDUtil;
 import com.ruijing.base.local.upload.util.s3.ObjectNameUtil;
+import com.ruijing.base.local.upload.web.s3.metadata.mime.Mimetypes;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -15,8 +18,12 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -66,9 +73,21 @@ public class BaseS3Client {
         
         String extension = FilenameUtils.getExtension(fileName);
         String key = PathUtils.concatFileName(ObjectNameUtil.getTimeKey(UUIDUtil.generateId()), extension);
+        
+        String contentType = Mimetypes.getInstance().getMimetype(fileName, key);
+        try {
+            fileName = StringUtils.replace(URLEncoder.encode(fileName, "UTF-8"), "+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        String disposition = "filename=" + fileName + ";filename*=" + fileName;
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put(HttpHeaders.CONTENT_DISPOSITION, disposition);
+        metadata.put(HttpHeaders.CONTENT_TYPE, contentType);
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
+                .metadata(metadata)
                 .build();
         RequestBody requestBody = RequestBody.fromInputStream(inputStream, fileSize);
         S3_CLIENT.putObject(putObjectRequest, requestBody);

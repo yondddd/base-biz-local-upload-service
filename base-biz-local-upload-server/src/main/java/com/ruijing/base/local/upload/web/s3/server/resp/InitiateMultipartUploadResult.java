@@ -15,6 +15,10 @@ public class InitiateMultipartUploadResult {
     private String key;
     private String uploadId;
     
+    public static InitiateMultipartUploadResult custom() {
+        return new InitiateMultipartUploadResult();
+    }
+    
     @XmlElement(name = "Bucket")
     public String getBucket() {
         return bucket;

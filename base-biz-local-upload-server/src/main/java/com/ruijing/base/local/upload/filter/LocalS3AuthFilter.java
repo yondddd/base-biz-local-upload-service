@@ -1,6 +1,6 @@
 package com.ruijing.base.local.upload.filter;
 
-import com.ruijing.base.local.upload.config.SystemConfig;
+import com.ruijing.base.local.upload.constant.SysConstant;
 import com.ruijing.base.local.upload.enums.ApiErrorEnum;
 import com.ruijing.base.local.upload.filter.local.LocalFilterChain;
 import com.ruijing.base.local.upload.filter.local.LocalHttpContext;
@@ -22,11 +22,6 @@ import java.io.IOException;
  */
 public class LocalS3AuthFilter implements LocalHttpFilter {
     
-    private final SystemConfig systemConfig;
-    
-    public LocalS3AuthFilter(SystemConfig systemConfig) {
-        this.systemConfig = systemConfig;
-    }
     
     @Override
     public void doFilter(LocalHttpContext context, LocalFilterChain<LocalHttpContext, IOException, ServletException> chain) throws IOException, ServletException {
@@ -37,7 +32,7 @@ public class LocalS3AuthFilter implements LocalHttpFilter {
         String authorization = servletRequest.getHeader("Authorization");
         if (StringUtils.isNotBlank(authorization)) {
             try {
-                flag = S3AuthUtil.validAuthorizationHead(servletRequest, systemConfig.getAccessKeyId(), systemConfig.getSecretAccessKey());
+                flag = S3AuthUtil.validAuthorizationHead(servletRequest, SysConstant.accessKeyId, SysConstant.secretAccessKey);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -45,7 +40,7 @@ public class LocalS3AuthFilter implements LocalHttpFilter {
             authorization = servletRequest.getParameter("X-Amz-Credential");
             if (StringUtils.isNotBlank(authorization)) {
                 try {
-                    flag = S3AuthUtil.validAuthorizationUrl(servletRequest, systemConfig.getAccessKeyId(), systemConfig.getSecretAccessKey());
+                    flag = S3AuthUtil.validAuthorizationUrl(servletRequest, SysConstant.accessKeyId, SysConstant.secretAccessKey);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

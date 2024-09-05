@@ -4,6 +4,7 @@ import com.ruijing.base.local.upload.web.s3.server.req.*;
 import com.ruijing.base.local.upload.web.s3.server.resp.CompleteMultipartUploadResult;
 import com.ruijing.base.local.upload.web.s3.server.resp.InitiateMultipartUploadResult;
 import com.ruijing.base.local.upload.web.s3.server.resp.MultiUploadPartResult;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.nio.file.Path;
 
@@ -16,7 +17,7 @@ public interface ObjectService {
     
     String putObject(ObjectPutReq req);
     
-    Path getObject(ObjectGetReq req);
+    Pair<Path, Path> getObject(ObjectGetReq req);
     
     void delObject(ObjectDelReq req);
     

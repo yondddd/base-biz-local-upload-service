@@ -1,6 +1,11 @@
 package com.ruijing.base.local.upload.web.s3.server.controller;
 
+import com.ruijing.base.local.upload.constant.AmzHeaders;
+import com.ruijing.base.local.upload.constant.HttpHeaders;
 import com.ruijing.base.local.upload.enums.ApiErrorEnum;
+import com.ruijing.base.local.upload.web.s3.metadata.Meta;
+import com.ruijing.base.local.upload.web.s3.metadata.Metadata;
+import com.ruijing.base.local.upload.web.s3.metadata.Stat;
 import com.ruijing.base.local.upload.web.s3.server.async.GetObjectExecutor;
 import com.ruijing.base.local.upload.web.s3.server.req.*;
 import com.ruijing.base.local.upload.web.s3.server.resp.CompleteMultipartUploadResult;
@@ -30,14 +35,21 @@ public class ObjectController {
     private ObjectService objectService;
     
     @PutMapping(value = "/s3/{putBucket}/**")
-    public @ResponseBody ResponseEntity<String> putObject(HttpServletRequest httpServerRequest,
-                                                          @PathVariable("putBucket") String bucket) throws Exception {
+    public ResponseEntity<String> putObject(HttpServletRequest httpServerRequest,
+                                            @PathVariable("putBucket") String bucket) throws Exception {
         
         String fullPath = (String) httpServerRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         String key = fullPath.replaceAll("/s3/" + bucket + "/", "");
+        
+        String contentLength = httpServerRequest.getHeader(HttpHeaders.CONTENT_LENGTH);
+        String contentType = httpServerRequest.getHeader(AmzHeaders.MetaContentType);
+        String contentDisposition = httpServerRequest.getHeader(AmzHeaders.MetaContentDisposition);
+        Stat stat = Stat.custom().setSize(contentLength);
+        Meta meta = Meta.custom().setContentType(contentType).setContentDisposition(contentDisposition);
         ObjectPutReq req = ObjectPutReq.custom().setBucket(bucket)
                 .setKey(key)
-                .setInputStream(httpServerRequest.getInputStream());
+                .setInputStream(httpServerRequest.getInputStream())
+                .setMetadata(Metadata.custom().setMeta(meta).setStat(stat));
         String url = objectService.putObject(req);
         return ResponseEntity.ok(url);
     }

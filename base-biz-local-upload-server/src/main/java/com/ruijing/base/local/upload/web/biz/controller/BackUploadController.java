@@ -51,7 +51,6 @@ public class BackUploadController {
             return FileUploadResp.failed("删除文件路径不能为空");
         }
         // 吧host去掉，默认bucket
-        BaseS3Client.deleteObjects();
         return FileUploadResp.failed("还没实现呢");
     }
     

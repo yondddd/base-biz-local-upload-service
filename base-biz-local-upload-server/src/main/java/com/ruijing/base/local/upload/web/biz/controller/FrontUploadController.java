@@ -29,7 +29,7 @@ public class FrontUploadController {
     @RequestMapping("/front")
     public @ResponseBody
     FileUploadResp uploadFileByType(ServletInputStream request, @RequestParam("id") @MethodParam(value = "文件账号id", required = true) String id,
-                                    @RequestParam("file") @MethodParam(value = "文件", required = false) MultipartFile file,
+                                    @RequestParam("file") @MethodParam(value = "文件", required = true) MultipartFile file,
                                     @RequestParam("type") @MethodParam(value = "文件类型", required = true) FileTypeEnum type,
                                     @RequestParam(value = "width", defaultValue = "0", required = false) @MethodParam(value = "图片宽度") int width,
                                     @RequestParam(value = "height", defaultValue = "0", required = false) @MethodParam(value = "图片高度") int height,
@@ -42,7 +42,7 @@ public class FrontUploadController {
         
         
         try {
-            String url = BaseS3Client.putObject(BucketConstant.DEFAULT_BUCKET, file.getOriginalFilename(), null, file.getSize());
+            String url = BaseS3Client.putObject(BucketConstant.DEFAULT_BUCKET, file.getOriginalFilename(), file.getInputStream(), file.getSize());
             return FileUploadResp.success(url);
         } catch (Exception e) {
             LOGGER.error("<|>FrontUploadController_front<|>", e);

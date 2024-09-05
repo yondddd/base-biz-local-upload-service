@@ -1,7 +1,7 @@
 package com.ruijing.base.local.upload.filter;
 
+import com.ruijing.base.local.upload.constant.AmzHeaders;
 import com.ruijing.base.local.upload.constant.S3Constant;
-import com.ruijing.base.local.upload.constant.S3Headers;
 import com.ruijing.base.local.upload.filter.local.LocalFilterChain;
 import com.ruijing.base.local.upload.filter.local.LocalHttpContext;
 import com.ruijing.base.local.upload.filter.local.LocalHttpFilter;
@@ -33,11 +33,11 @@ public class LocalS3ContextFilter implements LocalHttpFilter {
         }
         
         S3Context s3Context = S3Context.getCreateS3Context()
-                .setRequestId(servletRequest.getHeader(S3Headers.AmzRequestID))
+                .setRequestId(servletRequest.getHeader(AmzHeaders.AmzRequestID))
                 .setRemoteHost(IpUtil.getIpFromContext(servletRequest))
                 .setHost(IpUtil.getHostName(servletRequest))
                 .setUserAgent(servletRequest.getHeader(HttpHeaders.USER_AGENT))
-                .setVersionId(servletRequest.getHeader(S3Headers.VersionID));
+                .setVersionId(servletRequest.getHeader(AmzHeaders.VersionID));
         
         Object pathVariables = servletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         if (pathVariables instanceof Map) {

@@ -1,6 +1,6 @@
 package com.ruijing.base.local.upload.web.s3.server.response;
 
-import com.ruijing.base.local.upload.constant.S3Headers;
+import com.ruijing.base.local.upload.constant.AmzHeaders;
 import com.ruijing.base.local.upload.enums.ApiErrorEnum;
 import com.ruijing.base.local.upload.web.s3.server.context.S3Context;
 import org.apache.commons.lang3.StringUtils;
@@ -35,8 +35,8 @@ public class ApiResponseUtil {
         
         try {
             ErrorResponse errorResponse = new ErrorResponse();
-            errorResponse.setRequestId(request.getHeader(S3Headers.AmzRequestID));
-            errorResponse.setHostId(request.getHeader(S3Headers.AmzRequestHostID));
+            errorResponse.setRequestId(request.getHeader(AmzHeaders.AmzRequestID));
+            errorResponse.setHostId(request.getHeader(AmzHeaders.AmzRequestHostID));
             errorResponse.setCode(errorEnum.getCode());
             errorResponse.setMessage(errorEnum.getDescription());
             errorResponse.setResource(request.getRequestURL().toString());

@@ -1,13 +1,12 @@
 package com.ruijing.base.local.upload.web.s3.server.service.impl;
 
-import com.ruijing.base.local.upload.config.SystemConfig;
+import com.ruijing.base.local.upload.constant.SysConstant;
 import com.ruijing.base.local.upload.web.s3.server.req.BucketDelReq;
 import com.ruijing.base.local.upload.web.s3.server.req.BucketPutReq;
 import com.ruijing.base.local.upload.web.s3.server.resp.ListAllMyBucketsResult;
 import com.ruijing.base.local.upload.web.s3.server.service.BucketService;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -27,14 +26,12 @@ import java.util.Objects;
 @Service
 public class BucketServiceImpl implements BucketService {
     
-    @Resource
-    private SystemConfig systemConfig;
     
     @Override
     public void putBucket(BucketPutReq req) {
         // bucket 名字检查
         String bucketName = req.getBucketName();
-        Path path = Paths.get("/" + systemConfig.getDataPath() + bucketName);
+        Path path = Paths.get("/" + SysConstant.dataPath + bucketName);
         boolean exists = Files.exists(path);
         if (!exists) {
             try {
@@ -48,7 +45,7 @@ public class BucketServiceImpl implements BucketService {
     @Override
     public void deleteBucket(BucketDelReq req) {
         String bucketName = req.getBucketName();
-        Path path = Paths.get("/" + systemConfig.getDataPath() + bucketName);
+        Path path = Paths.get("/" + SysConstant.dataPath + bucketName);
         boolean exists = Files.exists(path);
         if (!exists) {
             return;
@@ -68,7 +65,7 @@ public class BucketServiceImpl implements BucketService {
     
     @Override
     public ListAllMyBucketsResult listBuckets() {
-        Path path = Paths.get("/" + systemConfig.getDataPath());
+        Path path = Paths.get("/" + SysConstant.dataPath);
         List<ListAllMyBucketsResult.Bucket> buckets = new ArrayList<>();
         for (File file : Objects.requireNonNull(path.toFile().listFiles())) {
             Path filePath = file.toPath();
