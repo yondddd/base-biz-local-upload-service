@@ -35,8 +35,8 @@ public class ObjectController {
     private ObjectService objectService;
     
     @PutMapping(value = "/s3/{putBucket}/**")
-    public ResponseEntity<String> putObject(HttpServletRequest httpServerRequest,
-                                            @PathVariable("putBucket") String bucket) throws Exception {
+    public ResponseEntity<Void> putObject(HttpServletRequest httpServerRequest,
+                                          @PathVariable("putBucket") String bucket) throws Exception {
         
         String fullPath = (String) httpServerRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         String key = fullPath.replaceAll("/s3/" + bucket + "/", "");
@@ -51,7 +51,7 @@ public class ObjectController {
                 .setInputStream(httpServerRequest.getInputStream())
                 .setMetadata(Metadata.custom().setMeta(meta).setStat(stat));
         String url = objectService.putObject(req);
-        return ResponseEntity.ok(url);
+        return ResponseEntity.ok().build();
     }
     
     @GetMapping("/{dynamic}/**")
