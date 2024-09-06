@@ -115,7 +115,7 @@ public class BaseS3Client {
         return listBucketsResponse.buckets();
     }
     
-    public static String createMultipartUpload(String bucket, String fileName) {
+    public static CreateMultipartUploadResponse createMultipartUpload(String bucket, String fileName) {
         
         String extension = FilenameUtils.getExtension(fileName);
         String key = PathUtils.concatFileName(ObjectNameUtil.getTimeKey(UUIDUtil.generateId()), extension);
@@ -124,16 +124,15 @@ public class BaseS3Client {
                 .bucket(bucket)
                 .key(key)
                 .build();
-        CreateMultipartUploadResponse multipartUpload = S3_CLIENT.createMultipartUpload(request);
-        return multipartUpload.uploadId();
+        return S3_CLIENT.createMultipartUpload(request);
     }
     
-    public static String uploadPart(String uploadId,
-                                    String bucket,
-                                    String key,
-                                    Integer partNum,
-                                    InputStream inputStream,
-                                    Long fileSize) {
+    public static UploadPartResponse uploadPart(String uploadId,
+                                                String bucket,
+                                                String key,
+                                                Integer partNum,
+                                                InputStream inputStream,
+                                                Long fileSize) {
         UploadPartRequest request = UploadPartRequest.builder()
                 .uploadId(uploadId)
                 .bucket(bucket)
@@ -141,8 +140,7 @@ public class BaseS3Client {
                 .partNumber(partNum)
                 .build();
         RequestBody requestBody = RequestBody.fromInputStream(inputStream, fileSize);
-        UploadPartResponse response = S3_CLIENT.uploadPart(request, requestBody);
-        return response.eTag();
+        return S3_CLIENT.uploadPart(request, requestBody);
     }
     
     public static String completeMultipartUpload(String uploadId,

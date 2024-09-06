@@ -4,20 +4,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.UUID;
 
 public class CommonUtil {
-    public static String getNewGuid() {
-        String dateStr = DateUtil.getDateTagToSecond();
-        String randomStr = UUID.randomUUID().toString();
-        try {
-            randomStr = EncryptUtil.encryptByMD5(randomStr).toLowerCase();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return dateStr + randomStr;
-    }
-
+    
     public static String getApiPath() {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = requestAttributes.getRequest();

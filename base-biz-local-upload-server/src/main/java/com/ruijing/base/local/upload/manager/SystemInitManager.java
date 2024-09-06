@@ -31,10 +31,15 @@ public class SystemInitManager implements CommandLineRunner {
         if (!Files.exists(temPath)) {
             Files.createDirectory(temPath);
         }
-        // 初始化配置bucket
+        // 配置bucket
         Path baseBucket = Paths.get(root + "/" + BucketConstant.BaseMetaBucket);
         if (!Files.exists(baseBucket)) {
             Files.createDirectory(baseBucket);
+        }
+        // 分片上传记录
+        Path multipartPath = Paths.get(root + "/" + SysConstant.MULTIPART_PATH);
+        if (!Files.exists(multipartPath)) {
+            Files.createDirectory(multipartPath);
         }
         // 初始化Access Key Id ,Access Key Secret
         

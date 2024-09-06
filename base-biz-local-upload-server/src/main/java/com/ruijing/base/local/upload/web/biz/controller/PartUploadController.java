@@ -2,13 +2,14 @@ package com.ruijing.base.local.upload.web.biz.controller;
 
 import com.ruijing.base.biz.api.server.api.rpc.annotation.RpcMethodParam;
 import com.ruijing.base.local.upload.constant.BucketConstant;
+import com.ruijing.base.local.upload.web.biz.dto.InitMultipartUploadResultDTO;
 import com.ruijing.base.local.upload.web.biz.req.InitMultipartUploadRequest;
 import com.ruijing.base.local.upload.web.biz.req.UploadIdRequest;
 import com.ruijing.base.local.upload.web.biz.resp.CompleteMultipartUploadResp;
 import com.ruijing.base.local.upload.web.biz.resp.InitMultipartUploadResp;
 import com.ruijing.base.local.upload.web.biz.resp.UploadPartResp;
+import com.ruijing.base.local.upload.web.biz.service.MultipartUploadService;
 import com.ruijing.base.local.upload.web.biz.util.LinkAssertUtil;
-import com.ruijing.base.local.upload.web.s3.client.BaseS3Client;
 import com.ruijing.base.swagger.api.rpc.annotation.RpcApi;
 import com.ruijing.base.swagger.api.rpc.annotation.RpcMethod;
 import com.ruijing.fundamental.api.remote.RemoteResponse;
@@ -17,8 +18,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 /**
  * @Description: 分片上传接口
@@ -29,6 +30,9 @@ import java.io.IOException;
 @RestController
 @RpcApi(value = "文件分片上传接口")
 public class PartUploadController {
+    
+    @Resource
+    private MultipartUploadService multipartUploadService;
     
     /**
      * 阿里云oss最小分片大小为100kb，但推荐是1m-10m，这里设置最小10m
@@ -54,9 +58,10 @@ public class PartUploadController {
         if (StringUtils.isNotBlank(errorMsg)) {
             return RemoteResponse.<InitMultipartUploadResp>custom().setFailure(errorMsg);
         }
-        String uploadId = BaseS3Client.createMultipartUpload(BucketConstant.DEFAULT_BUCKET, request.getFileName());
+        InitMultipartUploadResultDTO resp = multipartUploadService.initMultipartUpload(BucketConstant.DEFAULT_BUCKET, request.getFileName(), request.getFileMd5(), request.getFileSize(), request.getTotalPart());
         InitMultipartUploadResp data = new InitMultipartUploadResp();
-        data.setUploadId(uploadId);
+        data.setUploadId(resp.getUploadId());
+        data.setFileUrl(resp.getFileUrl());
         return RemoteResponse.success(data);
     }
     
@@ -74,14 +79,10 @@ public class PartUploadController {
         if (StringUtils.isNotBlank(errorMsg)) {
             return RemoteResponse.<UploadPartResp>custom().failure(errorMsg);
         }
-        try {
-            String eTag = BaseS3Client.uploadPart(uploadId, BucketConstant.DEFAULT_BUCKET, null, partNum, partFile.getInputStream(), partFile.getSize());
-            UploadPartResp data = new UploadPartResp();
-            data.setETag(eTag);
-            return RemoteResponse.success(data);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        String eTag = multipartUploadService.uploadPart(uploadId, partNum, partFile);
+        UploadPartResp data = new UploadPartResp();
+        data.setETag(eTag);
+        return RemoteResponse.success(data);
     }
     
     @RpcMethod("分片合并")
@@ -92,7 +93,7 @@ public class PartUploadController {
         if (StringUtils.isNotBlank(errorMsg)) {
             return RemoteResponse.<CompleteMultipartUploadResp>custom().failure(errorMsg);
         }
-        String url = BaseS3Client.completeMultipartUpload(request.getUploadId(), BucketConstant.DEFAULT_BUCKET, null, null);
+        String url = multipartUploadService.completeMultipartUpload(request.getUploadId());
         CompleteMultipartUploadResp resp = new CompleteMultipartUploadResp();
         resp.setUrl(url);
         return RemoteResponse.success(resp);
@@ -106,7 +107,7 @@ public class PartUploadController {
         if (StringUtils.isNotBlank(errorMsg)) {
             return RemoteResponse.<Boolean>custom().failure(errorMsg);
         }
-        BaseS3Client.abortMultipartUpload(request.getUploadId(), BucketConstant.DEFAULT_BUCKET, null);
+        multipartUploadService.abortMultipartUpload(request.getUploadId());
         return RemoteResponse.success();
     }
     

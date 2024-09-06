@@ -1,6 +1,7 @@
 package com.ruijing.base.local.upload.web.s3.server.service.impl;
 
 import com.ruijing.base.local.upload.constant.SysConstant;
+import com.ruijing.base.local.upload.util.EncryptUtil;
 import com.ruijing.base.local.upload.util.UUIDUtil;
 import com.ruijing.base.local.upload.web.s3.metadata.Metadata;
 import com.ruijing.base.local.upload.web.s3.server.req.*;
@@ -15,10 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.Comparator;
 
 /**
  * @Description:
@@ -47,7 +48,7 @@ public class ObjectServiceImpl implements ObjectService {
             metadata.getStat().setLastModified(String.valueOf(System.currentTimeMillis()));
             Path metaPath = Paths.get(json);
             // write metadata
-            Files.write(metaPath, JsonUtils.toJson(metadata).getBytes());
+            Files.write(metaPath, JsonUtils.toJson(metadata).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -97,17 +98,72 @@ public class ObjectServiceImpl implements ObjectService {
     
     @Override
     public MultiUploadPartResult uploadPart(MultiUploadPartReq req) {
-        return null;
+        String temp = SysConstant.tempPath + "/" + req.getUploadId() + "/";
+        Path tempPath = Paths.get(temp);
+        if (!Files.exists(tempPath)) {
+            throw new RuntimeException("uploadId不存在" + req.getUploadId());
+        }
+        MultiUploadPartResult result = new MultiUploadPartResult();
+        result.setPartNum(req.getPartNum().toString());
+        String part = temp + req.getPartNum() + ".part";
+        try {
+            String etag = EncryptUtil.encryptByDES(part);
+            result.seteTag(etag);
+            Files.copy(req.getInputStream(), Paths.get(part), StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return result;
     }
     
     @Override
     public CompleteMultipartUploadResult completeMultipartUpload(MultipartUploadCompleteReq req) {
-        return null;
+        String temp = SysConstant.tempPath + "/" + req.getUploadId() + "/";
+        String key = SysConstant.dataPath + req.getBucket() + "/" + req.getKey();
+        // 怎么知道有没有漏?
+        boolean check = true;
+        for (PartReq part : req.getParts()) {
+            String p = temp + part.getPartNumber() + ".part";
+            try {
+                if (!part.getETag().equals(EncryptUtil.encryptByDES(p))) {
+                    check = false;
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (!check) {
+            throw new RuntimeException("check fail");
+        }
+        req.getParts().sort(Comparator.comparing(PartReq::getPartNumber));
+        // merge
+        Path keyPath = Paths.get(key);
+        try (FileChannel outputChannel = FileChannel.open(keyPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+            for (PartReq part : req.getParts()) {
+                String partFilePath = temp + part.getPartNumber() + ".part";
+                Path partPath = Paths.get(partFilePath);
+                try (FileChannel partChannel = FileChannel.open(partPath, StandardOpenOption.READ)) {
+                    partChannel.transferTo(0, partChannel.size(), outputChannel);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        CompleteMultipartUploadResult result = new CompleteMultipartUploadResult();
+        result.setBucket(req.getBucket());
+        result.setKey(req.getKey());
+        try {
+            result.setETag(EncryptUtil.encryptByMD5(req.getBucket() + "/" + req.getKey()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        result.setLocation("test");
+        return result;
     }
     
     @Override
     public void abortMultipartUpload(MultipartUploadAbortReq req) {
-    
+        // abort 直接删掉tem 里的uploadId 目录
     }
     
 }

@@ -1,17 +1,15 @@
 package com.ruijing.base.local.upload.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.math.BigDecimal;
 
 public class ConvertOp {
-
+    
     public static boolean isNull(Object obj) {
-        if (obj == null) {
-            return true;
-        } else {
-            return false;
-        }
+        return obj == null;
     }
-
+    
     public static String convert2String(Object obj) {
         String result;
         if (!isNull(obj)) {
@@ -19,15 +17,14 @@ public class ConvertOp {
                 result = String.valueOf(obj);
             } catch (Exception e) {
                 e.printStackTrace();
-                ;
-                result = StringUtil.EMPTY;
+                result = StringUtils.EMPTY;
             }
         } else {
-            result = StringUtil.EMPTY;
+            result = StringUtils.EMPTY;
         }
         return result;
     }
-
+    
     public static Integer convert2Int(Object obj) {
         Integer result;
         if (!isNull(obj)) {
@@ -39,11 +36,10 @@ public class ConvertOp {
                     result = Integer.parseInt(String.valueOf(obj));
                 } catch (Exception e) {
                     e.printStackTrace();
-                    ;
                     result = 0;
                 }
             }
-
+            
         } else {
             result = 0;
         }
