@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 public class FileChunkUploadMapper {
     
     public synchronized static void write(FileChunkUploadDO record) {
-        String key = SysConstant.dataPath + SysConstant.MULTIPART_PATH + "/" + record.getOssUploadId();
+        String key = SysConstant.MULTIPART_PATH + "/" + record.getOssUploadId();
         try {
             Files.write(Paths.get(key), JsonUtils.toJson(record).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
@@ -27,7 +27,7 @@ public class FileChunkUploadMapper {
     }
     
     public static FileChunkUploadDO getByUploadId(String uploadId) {
-        String key = SysConstant.dataPath + SysConstant.MULTIPART_PATH + "/" + uploadId;
+        String key = SysConstant.MULTIPART_PATH + "/" + uploadId;
         Path path = Paths.get(key);
         String jsonString = null;
         try {

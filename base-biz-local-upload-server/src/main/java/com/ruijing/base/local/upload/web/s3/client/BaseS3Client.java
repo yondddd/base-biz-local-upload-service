@@ -2,6 +2,7 @@ package com.ruijing.base.local.upload.web.s3.client;
 
 import com.ruijing.base.local.upload.config.BucketDomain;
 import com.ruijing.base.local.upload.constant.HttpHeaders;
+import com.ruijing.base.local.upload.constant.SysConstant;
 import com.ruijing.base.local.upload.util.CommonUtil;
 import com.ruijing.base.local.upload.util.PathUtils;
 import com.ruijing.base.local.upload.util.UUIDUtil;
@@ -38,7 +39,7 @@ public class BaseS3Client {
     private static S3Client S3_CLIENT;
     
     public BaseS3Client() {
-        StaticCredentialsProvider provider = StaticCredentialsProvider.create(AwsBasicCredentials.create("admin", "abcd@1234"));
+        StaticCredentialsProvider provider = StaticCredentialsProvider.create(AwsBasicCredentials.create(SysConstant.accessKeyId, SysConstant.secretAccessKey));
         S3_CLIENT = S3Client.builder()
                 .credentialsProvider(provider)
                 .endpointOverride(URI.create(CommonUtil.getApiPath() + "s3/"))

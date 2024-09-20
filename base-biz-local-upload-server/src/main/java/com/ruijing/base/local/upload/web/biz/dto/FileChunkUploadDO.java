@@ -15,6 +15,8 @@ public class FileChunkUploadDO implements Serializable {
      */
     private String ossUploadId;
     
+    private String fileName;
+    
     /**
      * 文件md5值
      */
@@ -84,6 +86,15 @@ public class FileChunkUploadDO implements Serializable {
      */
     public void setOssUploadId(String ossUploadId) {
         this.ossUploadId = ossUploadId;
+    }
+    
+    public String getFileName() {
+        return fileName;
+    }
+    
+    public FileChunkUploadDO setFileName(String fileName) {
+        this.fileName = fileName;
+        return this;
     }
     
     /**
@@ -232,6 +243,7 @@ public class FileChunkUploadDO implements Serializable {
     public String toString() {
         return "FileChunkUploadDO{" +
                 "ossUploadId='" + ossUploadId + '\'' +
+                ", fileName='" + fileName + '\'' +
                 ", fileMd5='" + fileMd5 + '\'' +
                 ", fileUrl='" + fileUrl + '\'' +
                 ", bucketName='" + bucketName + '\'' +

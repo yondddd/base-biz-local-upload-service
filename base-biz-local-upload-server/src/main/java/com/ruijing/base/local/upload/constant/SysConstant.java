@@ -7,8 +7,8 @@ package com.ruijing.base.local.upload.constant;
  */
 public class SysConstant {
     
-    public static final String MULTIPART_PATH = "/.baseio.sys/multipart";
-    public static final String tempPath = "/.baseio.sys/tem";
+    public static final String MULTIPART_PATH = "/baseio/.baseio.sys/multipart";
+    public static final String tempPath = "/baseio/.baseio.sys/tem";
     public static final String dataPath = "baseio/";
     public static final String accessKeyId = "baseiokeyid";
     public static final String secretAccessKey = "baseiokeysecret ";

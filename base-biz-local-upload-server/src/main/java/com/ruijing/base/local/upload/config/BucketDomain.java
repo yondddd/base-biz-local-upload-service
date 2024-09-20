@@ -1,5 +1,7 @@
 package com.ruijing.base.local.upload.config;
 
+import com.ruijing.fundamental.common.util.NetUtil;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,13 +12,15 @@ import java.util.Map;
  */
 public class BucketDomain {
     
-    // todo 做成可配置
     private static final Map<String, String> map1 = new HashMap<>();
     private static final Map<String, String> map2 = new HashMap<>();
     
     static {
+        // todo ip可配置
+        String ipV4 = NetUtil.getIpV4();
         map1.put("localhost", "data");
-        map2.put("data", "localhost:8888");
+        map1.put(ipV4, "data");
+        map2.put("data", ipV4 + ":8888");
     }
     
     public static String getBucket(String domain) {

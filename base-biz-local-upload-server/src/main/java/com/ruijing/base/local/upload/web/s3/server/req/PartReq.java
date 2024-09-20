@@ -1,32 +1,38 @@
 package com.ruijing.base.local.upload.web.s3.server.req;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.io.Serializable;
 
 /**
  * @Description:
  * @Author: WangJieLong
  * @Date: 2024-09-03
  */
-public class PartReq {
+public class PartReq implements Serializable {
     
-    private String eTag;
-    private int partNumber;
+    private static final long serialVersionUID = -2908224607020408538L;
     
-    @XmlElement(name = "ETag")
+    private String ETag;
+    private int PartNumber;
+    
+    @XmlElement(name = "ETag", namespace = "http://s3.amazonaws.com/doc/2006-03-01/")
     public String getETag() {
-        return eTag;
+        return ETag;
     }
     
-    public void setETag(String eTag) {
-        this.eTag = eTag;
+    public PartReq setETag(String ETag) {
+        this.ETag = ETag;
+        return this;
     }
     
-    @XmlElement(name = "PartNumber")
+    @XmlElement(name = "PartNumber", namespace = "http://s3.amazonaws.com/doc/2006-03-01/")
     public int getPartNumber() {
-        return partNumber;
+        return PartNumber;
     }
     
-    public void setPartNumber(int partNumber) {
-        this.partNumber = partNumber;
+    public PartReq setPartNumber(int partNumber) {
+        PartNumber = partNumber;
+        return this;
     }
+    
 }

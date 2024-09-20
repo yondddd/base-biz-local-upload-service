@@ -28,6 +28,11 @@ public class LocalS3AuthFilter implements LocalHttpFilter {
         HttpServletRequest servletRequest = context.getRequest();
         HttpServletResponse servletResponse = context.getResponse();
         
+        if (!servletRequest.getServletPath().startsWith("/s3")) {
+            chain.doFilter(context);
+            return;
+        }
+        
         boolean flag = true;
         String authorization = servletRequest.getHeader("Authorization");
         if (StringUtils.isNotBlank(authorization)) {

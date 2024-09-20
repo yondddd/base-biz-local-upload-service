@@ -74,8 +74,9 @@ public class ObjectController {
     }
     
     @PostMapping(value = "/s3/{createBucket}/**", params = "uploads")
-    public @ResponseBody ResponseEntity<String> createMultipartUpload(@PathVariable("createBucket") String bucket,
-                                                                      HttpServletRequest httpServerRequest) {
+    public ResponseEntity<String> createMultipartUpload(@PathVariable("createBucket") String bucket,
+                                                        HttpServletRequest httpServerRequest,
+                                                        HttpServletResponse response) {
         String fullPath = (String) httpServerRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         String key = fullPath.replaceAll("/s3/" + bucket + "/", "");
         MultipartUploadInitReq req = MultipartUploadInitReq.custom()
@@ -86,10 +87,10 @@ public class ObjectController {
     }
     
     @PutMapping(value = "/s3/{partBucket}/**", params = {"partNumber", "uploadId"})
-    public @ResponseBody ResponseEntity<String> uploadPart(HttpServletRequest httpServerRequest,
-                                                           HttpServletResponse httpServerResponse,
-                                                           @PathVariable("partBucket") String bucket,
-                                                           @RequestParam Integer partNumber, @RequestParam String uploadId) {
+    public ResponseEntity<String> uploadPart(HttpServletRequest httpServerRequest,
+                                             HttpServletResponse httpServerResponse,
+                                             @PathVariable("partBucket") String bucket,
+                                             @RequestParam Integer partNumber, @RequestParam String uploadId) {
         
         String fullPath = (String) httpServerRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         String key = fullPath.replaceAll("/s3/" + bucket + "/", "");
@@ -110,17 +111,20 @@ public class ObjectController {
     
     @PostMapping(value = "/s3/{completeBucket}/**", params = "uploadId")
     public ResponseEntity<String> completeMultipartUpload(HttpServletRequest httpServerRequest,
-                                                          @PathVariable("{completeBucket}") String bucket, @RequestParam String uploadId,
-                                                          @RequestBody MultipartUploadCompleteRequest body) {
+                                                          @PathVariable("completeBucket") String bucket,
+                                                          @RequestParam String uploadId,
+                                                          @RequestBody CompleteMultipartUpload CompleteMultipartUpload) {
         
         String fullPath = (String) httpServerRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         String key = fullPath.replaceAll("/s3/" + bucket + "/", "");
+        
         MultipartUploadCompleteReq req = MultipartUploadCompleteReq.custom()
                 .setBucket(bucket)
                 .setKey(key)
                 .setUploadId(uploadId)
-                .setParts(body.getParts());
+                .setParts(CompleteMultipartUpload.getParts());
         CompleteMultipartUploadResult data = objectService.completeMultipartUpload(req);
+        
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(ApiResponseUtil.xmlResponse(data));
     }
     

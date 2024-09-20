@@ -36,7 +36,7 @@ public class BackUploadController {
                                          @RequestParam(value = "recycleTime", defaultValue = "0", required = false) long recycleTime,
                                          HttpServletRequest request) {
         try {
-            String url = BaseS3Client.putObject(BucketConstant.DEFAULT_BUCKET, file.getOriginalFilename(), null, file.getSize());
+            String url = BaseS3Client.putObject(BucketConstant.DEFAULT_BUCKET, file.getOriginalFilename(), file.getInputStream(), file.getSize());
             return FileUploadResp.success(url);
         } catch (Exception e) {
             LOGGER.error("<|>FrontUploadController_front<|>", e);

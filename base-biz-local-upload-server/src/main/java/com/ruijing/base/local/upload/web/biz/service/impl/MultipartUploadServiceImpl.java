@@ -46,6 +46,7 @@ public class MultipartUploadServiceImpl implements MultipartUploadService {
         String key = multipartUpload.key();
         FileChunkUploadDO insert = new FileChunkUploadDO();
         insert.setOssUploadId(uploadId);
+        insert.setFileName(fileName);
         insert.setFileMd5(fileMd5);
         insert.setObjectName(key);
         insert.setTotalSize(fileSize);
@@ -72,9 +73,8 @@ public class MultipartUploadServiceImpl implements MultipartUploadService {
         FileChunkUploadDO exist = FileChunkUploadMapper.getByUploadId(uploadId);
         Preconditions.notNull(exist, "上传id查询为空:" + uploadId);
         if (FilePartUploadStatusEnum.INIT_FINISH.getVal().equals(exist.getStatus())) {
-            FileChunkUploadDO updateStatus = new FileChunkUploadDO();
-            updateStatus.setStatus(FilePartUploadStatusEnum.UPLOADING.getVal());
-            FileChunkUploadMapper.write(updateStatus);
+            exist.setStatus(FilePartUploadStatusEnum.UPLOADING.getVal());
+            FileChunkUploadMapper.write(exist);
         }
         List<PartDTO> parteTags = JsonUtils.parseList(exist.getPartEtag(), PartDTO.class);
         Map<Integer, PartDTO> collect =
@@ -152,6 +152,7 @@ public class MultipartUploadServiceImpl implements MultipartUploadService {
         }
         partETags.add(parteTag);
         String json = JsonUtils.toJson(partETags);
+        old.setCurrentPartNum(partETags.size());
         old.setPartEtag(json);
         FileChunkUploadMapper.write(old);
         return parteTag.geteTag();

@@ -27,7 +27,7 @@ public class SystemInitManager implements CommandLineRunner {
         if (!Files.exists(path)) {
             Files.createDirectory(path);
         }
-        Path temPath = Paths.get(root + "/" + SysConstant.tempPath);
+        Path temPath = Paths.get(SysConstant.tempPath);
         if (!Files.exists(temPath)) {
             Files.createDirectory(temPath);
         }
@@ -37,7 +37,7 @@ public class SystemInitManager implements CommandLineRunner {
             Files.createDirectory(baseBucket);
         }
         // 分片上传记录
-        Path multipartPath = Paths.get(root + "/" + SysConstant.MULTIPART_PATH);
+        Path multipartPath = Paths.get(SysConstant.MULTIPART_PATH);
         if (!Files.exists(multipartPath)) {
             Files.createDirectory(multipartPath);
         }

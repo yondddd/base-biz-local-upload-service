@@ -48,6 +48,7 @@ public class PartUploadController {
     
     @RpcMethod("初始化分片上传")
     @PostMapping("/initiateMultipartUpload")
+    @ResponseBody
     public RemoteResponse<InitMultipartUploadResp> initiateMultipartUpload(@RequestBody InitMultipartUploadRequest request, HttpServletRequest servletRequest) {
         String errorMsg = LinkAssertUtil.linkValid()
                 .notBlank(request.getFileName(), "文件名称为空")
