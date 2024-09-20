@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * @author yond
+ * @author WangJieLong
  * @date 6/1/2024
  * @description s3 auth
  */
@@ -35,25 +35,21 @@ public class LocalS3AuthFilter implements LocalHttpFilter {
         
         boolean flag = true;
         String authorization = servletRequest.getHeader("Authorization");
-        if (StringUtils.isNotBlank(authorization)) {
-            try {
-                flag = S3AuthUtil.validAuthorizationHead(servletRequest, SysConstant.accessKeyId, SysConstant.secretAccessKey);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            authorization = servletRequest.getParameter("X-Amz-Credential");
+//        String credential = servletRequest.getParameter("X-Amz-Credential");
+        try {
             if (StringUtils.isNotBlank(authorization)) {
-                try {
-                    flag = S3AuthUtil.validAuthorizationUrl(servletRequest, SysConstant.accessKeyId, SysConstant.secretAccessKey);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+                flag = S3AuthUtil.validAuthorizationHead(servletRequest, SysConstant.accessKeyId, SysConstant.secretAccessKey);
             }
+            if (!flag) {
+                flag = S3AuthUtil.validAuthorizationUrl(servletRequest, SysConstant.accessKeyId, SysConstant.secretAccessKey);
+            }
+        } catch (Exception e) {
+            flag = false;
         }
         if (!flag) {
             servletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             ApiResponseUtil.writeError(ApiErrorEnum.ErrInvalidRequest);
+            return;
         }
         chain.doFilter(context);
     }

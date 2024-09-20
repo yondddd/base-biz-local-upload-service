@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -23,11 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class BucketController {
     
-    private final BucketService bucketService;
-    
-    public BucketController(BucketService bucketService) {
-        this.bucketService = bucketService;
-    }
+    @Resource
+    private BucketService bucketService;
     
     private static final Logger LOGGER = LoggerFactory.getLogger(BucketController.class);
     

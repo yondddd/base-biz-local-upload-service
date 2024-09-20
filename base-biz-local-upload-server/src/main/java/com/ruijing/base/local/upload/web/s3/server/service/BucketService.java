@@ -5,7 +5,7 @@ import com.ruijing.base.local.upload.web.s3.server.req.BucketPutReq;
 import com.ruijing.base.local.upload.web.s3.server.resp.ListAllMyBucketsResult;
 
 /**
- * @author yond
+ * @author WangJieLong
  * @date 7/1/2024
  * @description bucket service
  */

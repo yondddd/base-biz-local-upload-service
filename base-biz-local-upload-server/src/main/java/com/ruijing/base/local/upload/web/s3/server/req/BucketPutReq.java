@@ -3,7 +3,7 @@ package com.ruijing.base.local.upload.web.s3.server.req;
 import com.ruijing.base.local.upload.web.s3.server.options.PutBucketOptions;
 
 /**
- * @author yond
+ * @author WangJieLong
  * @date 7/2/2024
  * @description put bucket request
  */

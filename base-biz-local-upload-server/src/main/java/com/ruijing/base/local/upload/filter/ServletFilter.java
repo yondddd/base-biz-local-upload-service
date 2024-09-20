@@ -27,7 +27,7 @@ public class ServletFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         LocalHttpFilterChain.getDefaultChain()
                 // s3鉴权
-//                .addFilter(new LocalS3AuthFilter())
+                .addFilter(new LocalS3AuthFilter())
                 // s3上下文
                 .addFilter(new LocalS3ContextFilter());
         Filter.super.init(filterConfig);

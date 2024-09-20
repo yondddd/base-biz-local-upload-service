@@ -40,7 +40,7 @@ public class BackUploadController {
             return FileUploadResp.success(url);
         } catch (Exception e) {
             LOGGER.error("<|>FrontUploadController_front<|>", e);
-            return FileUploadResp.failed("没实现呢");
+            return FileUploadResp.failed("upload异常");
         }
     }
     
