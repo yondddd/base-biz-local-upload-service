@@ -14,6 +14,7 @@ import com.ruijing.base.local.upload.web.s3.server.resp.CompleteMultipartUploadR
 import com.ruijing.base.local.upload.web.s3.server.resp.InitiateMultipartUploadResult;
 import com.ruijing.base.local.upload.web.s3.server.resp.MultiUploadPartResult;
 import com.ruijing.base.local.upload.web.s3.server.service.ObjectService;
+import com.ruijing.base.local.upload.web.s3.utils.FileHelpUtil;
 import com.ruijing.fundamental.common.util.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -201,7 +202,12 @@ public class ObjectServiceImpl implements ObjectService {
     
     @Override
     public void abortMultipartUpload(MultipartUploadAbortReq req) {
-        // abort 直接删掉tem 里的uploadId 目录
+        String temp = SysConstant.tempPath + "/" + req.getUploadId() + "/";
+        try {
+            FileHelpUtil.deleteCompletely(Paths.get(temp));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     
 }

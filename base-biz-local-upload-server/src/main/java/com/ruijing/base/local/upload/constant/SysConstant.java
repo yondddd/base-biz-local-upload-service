@@ -11,6 +11,6 @@ public class SysConstant {
     public static final String tempPath = "/baseio/.baseio.sys/tem";
     public static final String dataPath = "baseio/";
     public static final String accessKeyId = "baseiokeyid";
-    public static final String secretAccessKey = "baseiokeysecret ";
+    public static final String secretAccessKey = "baseiokeysecret";
     
 }
