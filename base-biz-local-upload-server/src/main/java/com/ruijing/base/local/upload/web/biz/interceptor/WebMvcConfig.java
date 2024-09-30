@@ -1,6 +1,5 @@
 package com.ruijing.base.local.upload.web.biz.interceptor;
 
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -13,7 +12,7 @@ import javax.annotation.Resource;
  * @Date: 2020/3/30 15:36
  * @Description:
  */
-@Configuration
+//@Configuration
 public class WebMvcConfig extends WebMvcConfigurationSupport {
     
     @Resource

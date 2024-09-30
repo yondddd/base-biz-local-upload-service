@@ -43,6 +43,7 @@ public class SystemInitManager implements CommandLineRunner {
         }
         // 初始化Access Key Id ,Access Key Secret
         
+        //todo 生成默认console账号
     }
     
 }
